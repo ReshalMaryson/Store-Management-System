@@ -1,0 +1,192 @@
+:root {
+  --store-bg: rgb(0, 0, 134);
+}
+div{
+  font-family: sans-serif;
+  font-size: 0.8rem;
+}
+
+
+/* dashboard */
+#dashboard_container{
+  display: flex;
+  flex-direction: column;
+}
+#dashboard_head  {
+  align-self: flex-end;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 10%;
+  padding: 0.4rem;
+  padding-right: 0.5rem;
+  border-radius: 5px;
+}
+#dashboard_head h1{
+  color: black;
+}
+#dashboard_btn_loguot{
+  cursor: pointer;
+  background-color:var(--store-bg);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid white;
+  transition: 200ms ease-out;
+}
+#dashboard_btn_loguot:hover{
+  border: 1px solid var(--store-bg);
+transition: 200ms ease-in;
+}
+#component_controls{
+  margin: 0 auto;
+  margin-top: 10px;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  gap: 25px;
+  width:97%;
+  background-color: var(--store-bg);
+  border-radius: 5px;
+  padding: 0.5rem;
+}
+#component_controls button{
+  cursor: pointer;
+  background-color: var(--store-bg);
+  color: white;
+  padding: 0.5rem;
+  border: 1px solid white;
+  border-radius: 5px;
+  transition: 150ms ease-out;
+}
+#component_controls button:hover{
+  border: 1px solid var(--store-bg);
+  font-size: 0.755rem;
+  transition: 150ms ease-in;
+}
+
+#compo_adduser__btn.active,
+#compo_addproduct__btn.active,
+#compo_allproducts_btn.active,
+#compo_allusers_btn.active,
+#compo_allsales_btn.active{
+  background-color: white;
+  color: black;
+
+}
+
+#div_showallusers{
+    display: none;
+}
+#div_showallusers.active{
+  display: block;
+}
+
+#div_showallprods{
+    display: none;
+}
+#div_showallprods.active{
+  display: block;
+}
+
+#div_addproduct_form{
+    display: none;
+}
+#div_addproduct_form.active{
+    display: block;
+}
+
+#div_showallsales{
+    display: none;
+}
+#div_showallsales.active{
+  display: block;
+}
+/* dashboard new */
+
+
+/* create user */
+#div_createuser_form{
+    display: none;
+}
+
+#div_createuser_form.active{
+    display: block;
+}
+/* create user end */
+
+
+/* product */
+#allprod_contaier{
+  display: block;
+}
+#allprod_contaier.active{
+  display: none;
+}
+
+#prodsearchresult{
+  display:  none;
+}
+#prodsearchresult.active{
+  display: block;
+}
+
+/* product end */
+
+
+
+
+/* bills */
+#search_Bill_cont{
+  display: block;
+}
+#search_Bill_cont.active{
+  display: none;
+}
+
+#searched_items_cont{
+  display:  none;
+}
+#searched_items_cont.active{
+  display: block;
+}
+/* bills end */
+
+
+/* analytics */
+
+#div_showanalytics{
+  display: none;
+}
+#div_showanalytics.active{
+  display: block;
+}
+/* analytics end */
+
+
+/* screen size cuation */
+.screensize_caution2{
+    display: none;
+}
+
+@media (max-width:750px) {
+#dashboard_container{
+    display: none;
+}
+.screensize_caution2{
+    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+}
+.screensize_caution2 p {
+    text-align: center;
+    font-size: 1.5rem;
+    background-color: var(--store-bg);
+    color: white;
+    border-radius: 5px;
+    padding: 1rem;
+}    
+}

@@ -1,0 +1,40 @@
+.wrap_chart_block{
+        width: 100%;
+    margin-top: 10px;
+}
+
+/* .wrap_chart_block h1{
+    margin-top: 20px;
+    text-align: center;
+    color: black;
+} */
+.wrap_chart_block p{
+    text-align: center;
+    margin-top: 30px;
+    padding-bottom: 1rem;
+}
+.topproductschart_block{
+    margin: 0 auto;
+    margin-top: 30px;
+    width: 50%;
+    max-width: "800px";
+    box-shadow: 1px -4px 27px 9px rgba(180,172,224,0.69);
+-webkit-box-shadow: 1px -4px 27px 9px rgba(180,172,224,0.69);
+-moz-box-shadow: 1px -4px 27px 9px rgba(180,172,224,0.69);
+
+}
+.titleandrefresh{
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    width: 97%;
+}
+.titleandrefresh h1{
+    color: black;
+    width: 55%;
+    text-align: right;
+}
+.titleandrefresh img{
+ width: 30px;
+ cursor: pointer;
+}

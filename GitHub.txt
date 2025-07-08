@@ -1,0 +1,122 @@
+--------------------------GIT-----------------------------
+what is a GIT ??
+it is a Tool for  Version Control System of a project.
+
+what Version Control System and how does it work??
+Version Control System is basically a System which has the history of all the modifications performed on the initial state of a project. Tracking is done by a VCS tool like GIT.
+
+what does GIT do?
+GIT being a Version Control System it tracks project things like. 
+ - what was the initial state.
+ - which file got changed.(added/updated/deleted)
+ - what code has been changed.  
+
+Basically Tracking all the history of a project.
+
+-----------------------------GITHUB------------------------------
+
+What is GITHUB ? 
+GITHUB is an interface where we can upload edit and view our project using GIT. it is Web and desktop based interface.
+
+--------------------------------------------------------------------------
+-> change: A change refers to any modification (added, edited, or deleted files) made in 
+           your project. These changes are tracked by Git.
+
+-> Commit: commit the change -> A commit is like taking a snapshot of your staged 
+                                changes. It tells Git to permanently save those changes in the project history, along with a message describing what was done. After this changes are saved and new Version of project is made with changes.
+
+
+
+--------------------------------GIT BASH----------------------------
+
+it is a command line based tool to perfrom Version Control operations.
+Git bash Uses dedicated Git Commands to perfrom operations.
+
+ -> setup: download it from web "git-scm.com"
+          insatll it in PC and run it.
+
+
+ -> Configure GITbash (after installation).
+     - git config --global user.name "you github username"
+     - git config --global user.email "your github email"
+     - git config-list (to check what values you have assigned).
+
+
+
+----------------- CLONE A PROJECT FROM REMOTE TO LOCAL----------------
+-> Remote : from GitHub server.
+-> Local : PC/Laptop.
+
+ setps to clone :
+      - get the link of the repo from GITHUB
+      - command -> git clone repo_link
+      - cd command to repository.  
+
+
+
+----------------- STATUS AND ADD COMMIT-------------------------
+ When a poject is cloned from remote to local. We can check its status.
+
+  - git status (should be in the project repository).
+
+-> git status tells the status of a project.
+   
+   status:
+   - upto date : means project is same as it is on github repo
+   - untracked : new files added that git is not tracking in project repo.
+   - modified : file changed or something in a file is changed.
+   - staged : file or changes is ready to commit.
+   - unmodified : no changes.
+
+ -> add & commit:
+    this the 2 step way to save changes permanently in the github repository.
+    
+    NOTE : staged status is for tracked files. 
+           untracked status is for the files which are not being tracked.
+   
+   - so add command makes the untracked file to staged status means its ready to commit.
+
+    -> git add <file_name>  (add a specific file)
+    -> git add . (add all the modified files)  
+
+   - commit command is when changes are patched to the repository permanently.
+    -> git commit -m "description about changes"
+
+  NOTE : after add and commit changes will be saved but they will not be visible on github remote repository. 
+
+  After commit we have to push the changes to main origin.
+
+ command ->   git push orgin main   
+
+
+ -> Commands for Git Bash CLI: 
+    git --version
+    git clone
+    git status
+    git add
+    git commit -m "message"
+    git push
+    git pull
+    git log
+    git branch
+    git checkout
+
+------------------Initialize a New Directiory from local to remote---------------
+
+-> you make a folder in your local device and then add it to the github.
+
+  steps:
+   - make a folder 
+   - cd to that folder and command -> git init
+   - then go to github and make a new repository.
+   - command git remote add origin <link of your new repository>.
+   - git remote -v (to verify the repository links).
+   - git branch (check the current branch -> "master") 
+   - git branch -M new_name_for_branch (main)
+   
+    then you can use origin/main to push your new repository to github
+    - git add . 
+    - git push -u origin/main  (-u will make a shortcut for origin/main so we can write   
+      git push only in future for this branch)
+
+

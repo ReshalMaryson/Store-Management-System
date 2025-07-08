@@ -1,0 +1,230 @@
+:root {
+  --store-bg: #000086;
+}
+#numberofsales{
+  margin: 0 auto;
+  color: black;
+  width: 96%;
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+#search_sale{
+    margin: 0 auto;
+    padding-left: 1rem;
+    width: 85%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#sales_search_bar{
+    width: 30%;
+    display: flex;
+    gap: 10px;
+    /* width: 50%; */
+}
+#sales_search_bar input{
+    padding: 0.3rem;
+    width: 100%;
+    border: 2px solid var(--store-bg);
+    border-radius: 3px;
+}
+#sales_search_icon{
+    background-color: var(--store-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#sales_search_icon img{
+    width: 20px;
+}
+
+/* filter and custom search */
+#filter_custom_search_sale{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 50%;
+}
+
+#filter_custom_search_sale img{
+    width: 20px;
+}
+#filter_custom_search_sale select{
+    width:30%;
+    padding: 0.2rem;
+    border: 2px solid var(--store-bg);
+    border-radius: 4px;
+    font-family: sans-serif;
+}
+
+#input_search_bill_date{
+    border: 1px solid var(--store-bg);
+    padding: 0.3rem;
+    border-radius: 4px;
+    /* background-color: var(--store-bg); */
+    font-size: 0.9rem;
+}
+#input_search_bill_date::placeholder{
+    color: white;
+}
+
+
+
+.refreshsales{
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  width: 95%;
+}
+.refreshsales img{
+  width: 25px;
+  cursor: pointer;
+}
+
+/* Show all sales block */
+#clear_search{
+  display: none;
+}
+#clear_search.active{
+  margin:  0 auto;
+  display: block;
+  width: 97%;
+}
+#clear_search #p_clear_search {
+  width: 7%;
+  text-align: center;
+  padding: 0.4rem;
+   background-color: #d32f2f;
+   border: none;
+   border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: 100ms ease-out;
+}
+#clear_search  #p_clear_search:hover{
+   background-color: #720b0b;
+  transition: 100ms ease-in;
+  }
+
+#show_sales {
+  margin: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+    scrollbar-color: #002984 #f1f1f1;
+  font-family: Arial, sans-serif;
+}
+#sales_items_title {
+  display: grid;
+   grid-template-columns: 2.4fr 2.5fr 2.5fr 2.5fr 2.5fr 2.5fr;
+  background-color: #002d96;
+  color: white; 
+  font-weight: bold;
+  padding: 10px;
+  margin: 0;
+  list-style: none;
+  border-bottom: 2px solid #ccc;
+}
+
+#sales_wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 285px;
+  overflow: auto;
+}
+.sale {
+  display: grid;
+  grid-template-columns: 2.5fr 2.5fr 2.5fr 2.5fr 2.5fr 2.5fr;
+  align-items: center;
+  padding: 1.2rem;
+  border-bottom: 1px solid #ddd;
+  align-items: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  height: 50px;
+  overflow: hidden;
+  transition: 300ms ease-out;
+}
+.sale.active{
+  height: 700px;
+  overflow:visible;
+  scrollbar-width: thin;
+  scrollbar-color: #002984 #f1f1f1;
+  transition: 300ms ease-in;
+}
+.sale:hover {
+  background-color: #f9f9f9;
+}
+
+#p_name,
+#p_supplier {
+  word-break: break-word;
+  line-height: 17px;
+}
+
+
+ /* show bill items */
+#sale_items {
+  margin:  0 auto;
+  grid-column: 1 / -1; 
+  padding: 0.5rem;
+  margin-top: 20px;
+  border-radius: 5px;
+  display: flex;
+   flex-direction: column;
+   width: 80%;
+   height: 150px;
+   overflow: auto;
+}
+#sale_item_heading{
+  grid-column: 1 / -1;
+  align-self: center;
+  width: 80%;
+  text-align: center;
+  background-color: #000086;
+  color: white;
+  padding: 0.2rem;
+  margin: 0 0 0.5rem 0;
+  border-radius: 4px;
+  font-size: 1rem;
+
+}
+#sale_items_title{
+  margin:  0 auto;
+  display: grid;
+grid-template-columns: 10fr 10fr 2fr ; 
+   width: 80%;
+   border-bottom: 2px solid var(--store-bg);
+   padding-bottom: 0.5rem;
+}
+#sale_items_title p{
+  font-weight: 550;
+  font-size: 0.85rem;
+}
+#item {
+  margin: 0 auto;
+  margin-top: 10px;
+  display: grid;
+   grid-template-columns: 11fr 11fr 2fr ; 
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+}
+
+/* pagination */
+#pagination_control{
+    margin-top: 1rem;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     gap: 0.5rem;
+}
+#pagination_control_btn{
+    cursor: pointer;
+}

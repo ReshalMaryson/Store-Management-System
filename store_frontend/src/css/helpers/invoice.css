@@ -1,0 +1,155 @@
+:root {
+  --store-bg: rgb(0, 0, 134);
+}
+
+#invoice_cont{
+    /* border: 1px solid red; */
+    display: block;
+}
+#invoice_cont h1{
+    color: white;
+    text-transform:uppercase;
+    background-color: var(--store-bg);
+    text-align: center;
+    padding: 0.5rem 0;
+    border-radius: 5px;
+}
+#cart_title{
+    margin-top: 8px;
+}
+
+#invoice_items_title{
+  background-color: #002984;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  border-radius: 4px;
+}
+
+#invoice_item_wrapper{
+    display: flex;
+    flex-direction: column;
+    gap:2px;
+    height: 150px;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #002984 #f1f1f1;
+
+}
+#invoice_item{
+    display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  
+}
+#invoice_item #item_info {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#item_info p {
+flex: 1;
+}
+
+#input_qty{
+    border: none;
+    width: 10%;
+} 
+
+#invoice_customer{
+    width: 100%;
+    padding-bottom: 0.4rem;
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    border-bottom: 1px solid gray;
+}
+#invoice_customer input{
+    padding: 0.2rem;
+  border-radius: 3px;
+  border: 1px solid var(--store-bg);
+  font-size: 0.9rem;
+  margin-left: 5px;
+}
+#discount{
+    margin-top: 15px;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 10px;
+    background-color:rgb(232, 242, 252);
+     padding: 0.3rem;
+     border-radius: 5px;
+}
+#invoice_discount{
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+#discount #invoice_discount_lable{
+    font-size: 1.2rem;
+}
+#discount input{
+    width: 10%;
+    text-align: center;
+    border: 1px solid var(--store-bg);
+    border-radius: 3px;
+    font-size: 0.8rem;
+    border: none;
+    font-size: 1.2rem;
+    background-color:rgb(232, 242, 252);
+   
+}
+#discount p{
+    font-size: 1.2rem;
+}
+#invoice_controls{
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 98%;
+    
+}
+#create_option_btn{
+    width: 25%;
+    display: flex;
+    justify-content:flex-end;
+    align-items: flex-end;
+    gap: 10px;
+}
+#invoice_btn_create{
+    background-color: var(--store-bg);
+    padding: 0.5rem;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 150ms ease-out;
+}
+#invoice_btn_create:hover{
+    background-color: blue;
+    transition: 150ms ease-in;
+}
+#invoice_btn_cancel{
+   background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+     transition: 150ms ease-out;
+}
+#invoice_btn_cancel:hover{
+      background-color: #b71c1c;
+         transition: 150ms ease-in;
+}

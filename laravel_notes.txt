@@ -1,0 +1,1955 @@
+----------------------INTRODUCTION---------------------------
+Laravel is a PHP framework use to make fast and complex websites.
+it uses MVC parttren. -> (Modle, view, Controller).
+Model -> Database .
+view -> html or frontend.
+Controller -> API.
+
+To run Laravel you need XAMP and Composer. (Composer is a PHP package management tool).
+
+-----------------------INSTALLATION-----------------------------
+Commands to run.
+
+composer global require laravel/installer - > to install laravel globally in system. (only one time.)
+after that make a folder or go to an existing one by cmd and type the next command. 
+
+laravel new project_file_name  - > this will initialize the new laravel project. (this if installed globally)
+
+OR composer create-project laravel/laravel project_name. (if dont want to install globally). 
+after this you can open your folder in code editor.
+
+the you can run one more command -> php artisan serve. (to run the project on localhost).
+
+--------------------------------MVC--------------------------------
+what is MVC- > it is a software desgin pattren to develop reliable applications.
+
+MVC is divided in three parts.
+1. Model -> here we Write Bussiness logics , database communication.
+2. View -> code for UI.
+3. Controller -> logic to handle user interaction or API and most of it...to work as a bridge 
+                 b/w View and Model.
+
+MVC life cycle: 
+when a user requests a page ....if it is not databse related then that request goes to Controller first and then according to request Controller decides what view to send as response.
+
+when a user requests a page ....if it includes fetching data from database or anything related to database then again Controller gets it first and then pass it to model then model sends the data as response to Controller and according to response Controller decides what view to send as response along with data. 
+
+--------------------------FILES AND FOLDER STRUCTURE-------------------------------
+composer.json -> it has all the info about our laravel project like the versions and installed 
+                 dependencies.
+
+vendor folder-> all the dependencies are mentioned in a composer.json file but is stored in 
+                vendor folder.
+
+APP folder -> it has all the code for our project. code on which our project is running on.
+
+Routes folder -> it has a file...(web.php) this is used to define routes for our project.
+
+Resource -> it has all the frontend stuff but most importantly it has View folder which is 
+            used to store all the pages we wanna show in our we project.
+
+------------------------------------ROUTING-----------------------------
+
+pass a dynamic value to route-> Route::get('/about/{name}',function($name){
+                                       return view('about');
+                                    });
+
+now url will be (/about/any_name) only (/about) won't work.
+
+-> How to  use this name variable in the view we are rendering.
+
+in your route do this -> return view("about",["name"=>"$name"]);
+then go to you view file -> about.blade.php -> {{$name}} this render whatever name we pass in the 
+                     url. Note this only works for (.blade.php) file not for (.php) files its a laravel specific method. 
+
+-> Redirect a page. -> in routes web.php write -> route::redirect("on-this-page","to-this-page");
+
+-> Method of routes.
+  get,post,patch,delete.
+  
+  you can use any and match inplace of route method.
+  -> match is used when we want a single route to handle specific methods. like get and post.
+     route::match(['get','post'],"/user",function(){
+      return ok;
+     });
+
+ -> any is used when we want to route to be run for any http method.
+         route::any("/user",function(){
+      return ok;
+     });
+
+-> Caching routes-> php artisan route:cache -> this will cache all the routes for performance purpose.
+                    php artisan route:clear -> this will delete the route cache.
+
+                    whenever you cache a new file will be made in the bootstrap folder->cache folder.
+
+-> Send and get Parameter in the route url. 
+  - so parameter is sent in the route like this-> /product/?id=1&name=shose (/product) -> orignal route.
+ 
+  - parameter is accessed using request class in the route method.
+     use Illuminate\HTTP\Request;
+      route::get("/product",function(Request $request){
+       $product_id=$request->get('id');
+       $product_name=$request->get('name');
+
+       return "showing product with the id of $product_id and name $product_name";    
+         });
+ 
+-> parameter constraints:
+   These are used when we want to apply some constraints on the query parameters. there are methods to do it.
+   
+   1. ->whereNumber('para_name');  ---------> ensure that this parameter is always a number.
+   2. ->whereAlpha('para_name');  ------------> ensure that this parameter is only a alphabet.
+   3. ->whereAlphaNumeric('para_name');  ----------> ensure that this parameter is both alphabet and numeric.
+   4. ->whereIn('para_name',['value1','value2']); ----> ensure that value is from the given list only.
+   5. ->where('para_name','[0-9]+') ----------> Regex as constraint.
+
+-> Usage of these methods: 
+ 
+ ex1:  route::get('/user/{id?}',function(string $id=null){
+      if($id){
+         return view('user_profile');
+      }else{
+         view('all_users');
+      }
+   })->whereNumber('id');
+
+ex2:  route::get('/user/{name?}',function(string $name=null){
+      if($name){
+         return view('user_profile');
+      }else{
+         view('all_users');
+      }
+   })->whereAlpha('name');
+
+-> Route Fallback: 
+  it is used when a user try to access a route which is not defined in the app so to show a response to user we use route Fallback.
+
+   Route::fallback(function (){
+      return page not accessable;
+      or 
+      return view('fallback_page');
+   })
+--------------------------Named Routes------------------------------------
+-> to make a named route modify your route as
+   Route::view("path","view_name")->name('new_name');
+
+   use it in <a>. route('new_path_name')
+   <a href="{{route('new_name')}}">Path Name</a>  
+
+-> use it in controller.
+    return to_route('new_path_name');
+
+-> if your path expects a Parameter you can pass it by your controller.
+        for a path like -> /users/{{name}}
+        return to_route('new_path_name',["para_name"=>"value"]);
+
+
+
+--------------------------CONTROLLER-----------------------
+It is a part of MVC architecture.it connects the views and model.
+controller name should start with capital letter.
+
+-> Controller use handles two things.
+1. display view.
+2. handle database.
+
+-> how to make Controller.
+1. we can make it by making a new file in the Controller folder 
+2. use CMD command-> php artisan make:controller controllername
+
+
+-> Each controller is a class could have some function which can be used upon calling them via 
+   routes.
+
+-> How to call controller via routes.
+   in web.php use your controller by this.
+
+use path/to/your/controller;
+    then create a route for that controller and call the function upon that route.
+
+ Route::get("route_name",[controller_name::class,"function_from_controller"]);
+
+ Example:
+ Route::get("users",[UserController::class,"showUsers"]); -> upon (/users) showUsers() function 
+                                                             will be run from UserController.
+
+-> single task component: a component whoes job is to do one task only......this controller  
+                         can be made invokable by using php invoke function.
+
+- Create a invokable controller class command:  
+  php artisan make:controller controller_name --invokable         
+
+  now you can use this controller class in the route by just using its name. signle task component routes are post usually.
+    route::get('/user/{userid}/created',signle_task_controller_name::class);           
+
+
+-> Resource Controller : 
+  it is a type of controller which porvides us some pre defined method to perform CRUD operations:
+
+  make a Resource controller-> php artisan make:controller controller_name --Resource
+
+  then in your resource controller you will find some methods: 
+
+  methods name and their use : 
+  index -> to get all the data from db.
+  create -> to open the insert data form page
+  store -> to insert the data in the db
+  show -> to show single record
+  edit -> to open update  form page
+  update -> to update the record 
+  destory-> to delete a record
+
+  - making routes for resource controller: 
+    Route::resource('route_name',your_resource_controller_class::class);
+
+    route_name could be (users,products,invoice)
+    routes for the methods will be automatically made.
+     you can check the routes by -> php artisan route:list --name=you_route_name
+
+-> Run specific methods of resource controller : 
+  by default all method from resource controller run for its route...but sometime we don't want to run a method for a route...for that we use 
+  - only() -> this is used to tell that only run these methods out of all the methods.
+  - except() -> this is to tell laravel that run all the methods excpet the specified methods.
+
+    Route::resource('route_name',your_resource_controller_class::class)->only(['update','create']);
+    Route::resource('route_name',your_resource_controller_class::class)->excpet(['update','create']);
+
+
+-> Change the name of the routes : 
+   in Resource controller all the route are named routes by default.
+   to change it we use ->names();
+    Route::resource('route_name',your_resource_controller_class::class)->names([
+      'method'=>'new_name'
+      ]);
+ ------------------------------VIEW------------------------------
+-> What is View ? 
+It is part of MVC architecture and it stores all the UI for the project.
+
+-> How to Create a View.
+1. create a file manually in View folder.
+2. CMD -> php artisan make:view view_name
+
+-> Call a view.
+
+1. call from routes.
+ in Web.php -> Route::view("/path","view_name");
+
+2. call from controller.
+  return view("view_name");
+
+-> Nested View
+ when view is in a folder within view folder it is nested.
+  how to get nested view-> Route::get("/path",function (){
+    view(folder_name.view_name);
+})
+
+-> check if a view exists or not before calling it.
+
+use Illuminate/Support/Fascades/View;
+
+if(View::exists("view_name")){
+   return view("view_name")
+}else{
+   echo "view not exists";
+}
+
+-----------------------------LARAVEL BLADE TEMPLATE------------------------------
+-> what is blade template?
+   It is a template engine which is used to execute PHP code. just like ejs for JS.
+   we can write or embed PHP along with html.
+   .blade.php is the extension to make a blade file.
+
+-> why Blade template than Traditional execution of php code?
+  Blade template is faster and simpler to write. why faster? beacause the code we write in laravel.....blade template caches it so it is faster to execute and changes the caches when code is modified.
+
+-> Embedding PHP using blade template.
+   {{}} -> double curly braces are called blade expression. in this we can write PHP code.
+   {{$name}} -> print 0r echo name.
+   {{rand()}}-> PHP functions using blade expression.
+   {{users[0] or users[1]}} -> display array. or use loop.
+
+ -> if else using  blade execute 
+   start with->  @if(condition) 
+                  <h1> output </h1>
+                 @elseif(condition)
+                   <h1> output </h1>
+                 @else
+                   <h1> output </h1>
+  end with->     @endif   
+
+-> loops using blade template.
+   - FOR loop
+   start with -> @for ($i=0;$i<=10;$i++ )
+                     <p>{{$i}}</p>
+   end with  ->   @endfor    
+
+   - FOREACH loop
+   start with -> @forech($arry as $arr)
+                   <p> {{$arr}} </p>
+   end with   -> @endforeach 
+
+   -FORELSE loop -> this checks a condition while running a loop.
+    start with -> @forelse($array as $arr)
+                      {{$arr}}
+    then ->        @empty
+                      <p>no value</p>
+    end with ->    @endforelse              
+
+-> comment in blade :   {-- comment --}
+-> Use html tags with blade template:
+   {!!"<h1>hello </h1>"!!}   -> same way you can write javascript code.
+
+-> Check for a value using isset in blade.
+   @isset($variable_name)
+   if set then logic
+   @endisset
+
+->empty function: @empty($variable_name)
+                  @endempty 
+
+-> write php code with blade template:
+   @php
+   $user="user";
+   @endphp
+
+   {{$user}} -> user
+
+-> blade directives.
+  - @include('filename/view_name')
+  - @includeif('filename/view_name')
+  - @includeWhen(true/false,'filename/view_name',['value-to-view'=>'value']) -> runs for true
+  - @includeUnless(true/false,'filename/view_name',['value-to-view'=>'value'])-> run for false
+
+
+-> Template Inheritance:
+   including subviews to every view is hectic and time consuming...what if we could make a master layout for all layout and only change the section which will be dynamic or different according to page. for that template Inheritance is used.
+
+   directives are used for this is:
+   - @yield('section_name')->this is used in masterlayout on the section which will be dynamic or view specific
+   - @extends('masterlayout_name') -> this is used to include the masterlayout to the view.
+   - @section('section_name') -> this is used in the child view after this you can insert dynamic data
+   - @endsection('section_name') -> to end the section.
+
+   each masterlayout can have multiple dynamic sections
+   default value for @yield('section_name','default_value')
+
+-> Js in Template Inheritance:
+   you can have a script as yeild in your masterlayout and populate it in other views.
+   create a js placeholder -> @stack('placeholder_name')
+   use it in your other veiws -> @push('placeholder_name') 
+                                 <script> </script>
+                                 <script src="script.js"></script>
+                                 @endpush 
+
+   - we can do this same with yeild directive but in yeild directive we cannot use same placeholder for 
+     multiple times and with push directive we can use same placeholder for multiple 
+     scripts                           
+   - you can do this for CSS file too or if you can do style tag styling then use @prepend('placeholder_name')
+                                                                                 <style></style>
+                                                                                  @endprepend
+
+---------------------------PHP in JS using Blade Template---------------------------
+
+lets say you have a php variable and you wanna directly use it in your js logic with any conversion or other things.....you can do it using blade template @json(php_variable_name) directive.
+
+OR you can use blade template feature {{ js::from($php_variable_name) }}
+
+      @php
+      @name="alex";
+      @endphp
+
+Ex1: <script>
+   var data=@json($name)  
+     console.log(data);
+   </script>
+
+Ex2: <script>
+   var data={{ js::from($name) }}
+   console.log(data); 
+   </script>
+ 
+----------------------------------SUBVIEWS----------------------------
+-> what is a Sub-View?
+   When a view is used in a View it is called SubView.
+   ex: A view named Home....A view named header...header is included in Home. so header is subview.
+
+-> How to make a SubView? 
+  same as Views are  made.
+
+-> How to Include a view in a view.
+   to use a subview in a view blade @include directive is used.
+   @include('folder_name.view_name')
+   @include('view_name')
+
+-> Pass data to subview.
+   @include(view_name,["data"=>"this data is passed"]);
+
+  Then in the view use this data.
+  <p> {{$data}}</p>    
+
+-> include if view exists or not.
+   @includeif(view_name);
+
+------------------------------COMPONENT----------------------------
+-> what is a component? 
+   A piece of code which can be reused in the project. like a function. reusable HTML
+   A component can be used in many files.
+   A component is different from conventional functions beacuse a component not only has backend logic but UI elements too.
+
+-> How to make a component? 
+ 1. you can make yourself...one folder in App folder named "view/component/component_name.   
+      blade.php" and one in Views folder "component/component_name". 
+
+ 2. by CMD command -> php artisan make:component component_name. (this will automatically 
+                      update the APP and views folder for the component).     
+
+-> How to use the component in a file.
+<x-component_name /> (a component's elements can be styled from the file it is being used in).
+
+-> pass data to component and class and use it in the component.
+  
+ 1 Data is passed where the component is called.
+ 2 then in the APP/view/component/component_name file we will do some changes.
+
+ so passing data.
+ <x-component_name msg="this message is sent where this component is being used" class="success"/>
+
+ now the App views
+ in the app component modify its class. 
+ define the number of variables you are passing in the component. here we are sending 2 variables.
+ 1 msg
+ 2 class 
+
+ so in the app component file
+ public $msg;
+ public $class;
+
+then take two values in its constructor function.
+  public function __construct($msg,$class){
+   this->msg=$msg;
+   this->class=$class;
+  }
+
+now you can use data in your component.
+<p class="{{$class}}">{{$msg}}</p>
+
+class is for the desgining of the elements. so we can send different class with different css according to what we want to show.
+
+---------------------SEND FORM DATA------------------------
+To send form data you need to do few things.
+1. make a veiw for form.
+2. make a controller for form.
+3. make a route for the form using controller.
+4. get the data sent by form.
+
+-> Always send csrf token when sending data from form.
+  simply write @csrf in your form tag.
+
+-> Access form data in controller.
+
+ from this line use Illuminate\Http\Request;
+ // use Request in you function.
+   public function sendFrom(Request $req)
+    {
+        echo $req; -> all the values with csrf token.
+        echo $req->property_name; to get specific value.
+    }
+
+--------------------------------------FORM VALIDATION-----------------------------------------------------
+   so the same $req variable we are using to get the value of the input. provides a function called 
+   validate().
+
+   validation Parameter list:
+   required ->	Field must be present and not empty
+
+   nullable ->	Field can be null (used with other rules)
+
+   string	 ->     Must be a string
+
+   integer  ->	Must be an integer
+
+   numeric	 ->     Must be a number (int or float)
+
+   email	 ->     Must be a valid email address
+
+   min:value->	Minimum length (for strings) or minimum value (for numbers)
+
+   max:value->	Maximum length (for strings) or maximum value (for numbers)
+
+   between:min,max -> Value must be between the given min and max
+
+   size:value ->	Must be exactly a certain length/value
+
+   boolean	  ->    Must be true/false, 0/1
+
+   confirmed ->	Requires a matching _confirmation field (e.g., password_confirmation)
+
+   same:field >	Field must match another field's value
+
+   different:field -> Field must be different from another field
+
+   in:foo,bar,... ->  Must be one of the specified values
+
+   not_in:foo,bar,...-> Must not be one of the specified values
+
+   regex:/pattern/	->  Must match the regex pattern
+
+   url   ->	  Must be a valid URL
+
+   active_url ->	Must be a valid and active URL (DNS check)
+
+   ip ->	Must be a valid IP address
+
+   uuid ->	Must be a valid UUID
+
+   date ->	Must be a valid date
+
+   date_format:Y-m-d ->  Must match the given date format
+
+   after:date -> Must be a date after a given date
+
+   before:date -> Must be a date before a given date
+
+   exists:table,column -> 	The value must exist in the specified database table/column
+
+   unique:table,column ->	The value must be unique in the specified database table/column
+
+   file -> Must be a file upload
+
+   image -> Must be an image (jpeg, png, bmp, gif, svg, etc.)
+
+   mimes:jpg,png -> Must be a file of given mime types
+
+   mimetypes:type,-> Must be a file of given MIME types
+
+   array   ->  Must be an array
+
+   json  -> Must be a valid JSON string
+
+   distinct -> All values in array must be different
+
+   present	-> Field must be present in input (even if empty)
+
+
+    use Illuminate\Http\Request;
+   // use Request in you function.
+   public function sendFrom(Request $req)
+    {
+      $req->validate([
+         "property_name"=>"validation_parameter|validation_parameter",
+          "property_name"=>"validation_parameter"
+      ]);
+      return $req;
+
+      ex: 
+       $req->validate([
+         "Username"=>"required | min:3| max:20",
+         "email"=>"required | email";
+       ]);      
+          return $req;
+    }
+
+    // validate for API response
+         use Illuminate\Support\Facades\Validator;
+         $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            // add your rules here...
+         ]);
+
+         if ($validator->fails()) {
+            return response()->json([
+                  'status' => 'error',
+                  'message' => 'Validation failed',
+                  'errors' => $validator->errors()
+            ], 422); // 422 Unprocessable Entity for validation errors
+         }
+
+         // Proceed if validation passes...
+         return response()->json([
+            'status' => 'success',
+            'message' => 'Validation passed!',
+         ]);
+
+
+-> Show errors from valdation.
+  validation provides us a superglobal variable $errors which contians all the errors if occured.
+  to get all the errors you can use $errors in the file from where the input is being used.
+  
+  USE: @errors  -> this will show all the errors with some additional information too which is not required.
+      so to get only input field related errors do this.
+
+     @if($errors->any())     -> check if any error.
+      @foreach ($errors->all() as $error)   -> if yes then get all the errors not just one.
+      <p>{{$error}}</p>
+      @endforeach
+      @endif
+
+   Get input specific errors. (which is the most convenient)
+   USE: <p> @error("username"){{$message}}@enderror </p>   
+   // this says if there is an error related to input 'username' show that error otherwise dont show anything  
+
+-> Custom Validation Messages.
+    For Custom validation messages add one thing in the validation function.
+
+          use Illuminate\Http\Request;
+   // use Request in you function.
+   public function sendFrom(Request $req)
+    {
+       $req->validate([
+         "Username"=>"required | min:3| max:20",
+         "email"=>"required | email";
+       ] , [
+         "username.required"=>"Please provide a value.",
+         "username.min" => "username cannot be less than 3 characters",
+         "username.max"=> "username cannot be greater than 20 characters",
+
+         "email.required"=>"email is required",
+         "email.email"=>"not a vaild email"
+       ]);      
+          return $req;
+    }
+
+-> Change the validation messages for whole project.
+  type in cmd-> php artisan lang:publish
+
+  this will create a folder which will have multiple files...from them select validation file and find your validation field and modify its default message.
+
+  this is done if you wanna display this same error for every same field you modified.
+  but if you wanna change for only one file then use the method above.        
+
+-> Stop form resetting after a validation fails.
+  so when a validation fails form is restted which results in losing the input for all the fields of form.
+  to stop it use value="{{old("input_name")}}" this for every input tag.
+
+  Ex:   <input type="email" placeholder="Email" name="email" value="{{old("email")}}">
+
+
+-> Make input red upon error.
+   Laravel validate function provides a check error for a specific input which can be used to apply style to a input field.
+  
+i.e -> class="{{@errors->first("input_name") ? "error_style_class" : ""}}"
+   
+  Ex:   <input type="email" placeholder="Email" name="email" value="{{old("email")}}"
+         class="{{@errors->first("email") ? "error_class" : ""}}">
+
+       <style>
+       .error_class{
+         border:1px solid red;
+       }
+       </style>  
+
+-> Create a custome validation rule.
+  cmd Command -> php artisan make:rule rule_name
+
+  a new folder naming (rules) will be made in the App folder. which will have the file to define the rule by.
+
+  define your condition in if statement then in the if block type.
+  $fail('the :attribute your error message'); -> this will produce default error message which can be modified 
+                                                 through controller.
+      
+
+  define the rule and now in your controller you can add that validation rule and show a custom error message.
+  
+
+-----------------------------Custom Form Validation Request Class-------------------------------
+    cmd command -> php artisan make:request request_class_name
+
+    in your request class 
+
+    public function rules(){
+      return [
+         'input_name'=>'validation_rule_name',
+         'input_name'=>'validation_rule_name|validation_rule_name',
+      ];
+    }
+
+    - to use this class in your controller, type new request_class_name rather than just Request.
+       public function users(request_class_name $req){
+            return $req->all();
+       }
+
+-> Make your own message function : 
+  in the custome request class 
+  public function message (){
+   retun [
+      'input_name.validation_rule_name'=>'your custom message'
+   ];
+  }
+
+
+-> prepareForValidation : 
+ it is a function wrote in custom request class, this function is used to perform any logic on the input value before send it to the form.
+
+ protected function prepareForValidation():void{
+   $this->merge([
+ 
+   ]);
+ }
+
+-> show one error messge at a time : 
+// in your custom request class
+  protected $stopOnFirstFailure=true; 
+
+-> Get all value from request and specific values from input : 
+
+  $req->all(); -> this is to get all the values of input fields.
+
+  $req->only(['input_name','input_name']); -> this to get only specified value and skip all the others.
+
+  $req->except(['input_name','input_name']); -> this is to get all value except the specified.
+
+  - Now we can use these values to save in database or manipluate.
+
+
+
+-----------------------------------CUSTOM VALIDATION RULE------------------------------------------
+
+Laravel provides validation rules pre define. but sometimes we have the need to make a custome validation rule for that laravel provides us a facility.
+
+- 2 ways to make a custome validation rule:
+
+1. Using rule object -> this is made one time and can be used for as many time as you want.
+2. Using Closure  -> this is made one time and can be used only one time in the project.
+
+-> Steps to make a Rule object :
+  1. php artisan make:rule RuleName 
+
+  2. then in the your custom rule class there will be a pre defined function.
+    
+    public function validate(string $attribute , mixed $value, Closure $fail){
+      
+      // here attribute is the name of the input field 
+      // value is the value of the input feild
+      // $fail is a method which runs when validation fails.
+
+      if($value === ""){
+         $fail ('please provide a value');
+      }
+      if(!isset($value)){
+         $fail('value cannot be empty');
+      }
+    } 
+
+  3. then go to your controller class.
+    use Apps\Rules\your_custome_rule_class;
+
+    -apply your rule.
+
+    $req->validate([
+      
+        'input_name'=>['required',new your_custome_rule_class]; 
+      // required is a built in validation rule.
+    ])
+
+
+-> steps to make a closure : 
+   Closure is like setting your custom validation rules directly in the controller class.
+  1 use Illuminate\Support\Facades\Validator;
+    use Closure;
+
+  2. in your controller function apply the closure validation : 
+     'input_name'=>['required',
+                  function(string $attribute, mixed $value, Closure $fail){
+                    if($value === ""){
+                     $fail('please provide a value');
+                    }
+                   }] ;  
+
+-----------------------------------------------URL-------------------------------------------
+
+{{URL::current()}} or {{url()->current}} -> display current page URL.
+{{URL::full()}} or {{url()->full}} -> display current page url with provided query Parameters too.
+{{URL::previous()}} -> display the url of the page from where current page is accessed from.
+
+-> Make link with URL (URL::to())
+   <a href="{{URL::to('path')}}">Path Name</a>  
+
+-> Send value in the URL.
+   <a href="{{URL::to('path',['value' or $value])}}">Path Name</a>  
+     URL-> /path/value
+
+---------------------------ROUTES GROUP PREFIX-------------------------------
+lets say you have a route and on that route you are doing multiple operations like /save,/show,/delete
+To do that you have to make route again and again with the parent route as the prefix...for few routes its not a problem to write the prefix again and again but for many routes like 10 15 it is feasable to make a group of that route.
+
+to make a group in your web.php file -> Route::prefix('prefix')->group(function(){
+                                             Route.view("prefix",'view_name');
+                                             Route.get('/save',[controller::class,'method']);
+                                              Route.get('/show',[controller::class,'method']);
+                                               Route.get('/delete',[controller::class,'method']);
+                                        });
+
+-> Group by controller-> Route::controller(controller_name::class)->group(function (){
+                           Route::get('path',"function1");
+                           Route::get('path',"function2");
+                           Route::get('path',"function3");
+                           Route::get('path/{$Parameter}',"function4"); -> accept $Parameter in function4.
+                          });
+
+
+------------------------------MIDDLEWARE----------------------------------
+-> What is a MiddleWare? 
+   Middleware is like a gatekeeper for your HTTP requests. It filters or modifies requests before they reach your controller or routes.
+
+-> Types of MiddleWare.
+   1. Global MiddleWare -> is applied to whole application.
+   2. Route MiddleWare  -> used to apply on specific routes.
+   3. Group MiddleWare  -> make group of MiddleWare and apply on some routes.
+
+-> How to make a Global MiddleWare -> Cmd Command-> php artisan make:middleware     
+   middleware_name -> then check dir App
+
+-> How to use Global middleware?
+   after creating a middleware go to bootstrap folder in there you will find app.php
+   then in that file import your middleware and in middleware function write.
+
+  $middleware->append('middleware_name::class');
+
+  now you can modify your middleware and see the changes accross your whole app.
+
+-> How to use route MiddleWare? 
+   after creating a middleware and the route on which the middlle will run ....route provides a middleware function to assign a middleware to that specific route.
+
+   Route::get(/admin,function(){
+      return view('admin');
+   })->middleware(adminMiddleware::class);
+
+   - here adminMiddleware is the middleware which will run for the route /admin....in which it could check the role of the logged in user or anything else.
+
+-> Group routes by middleware.
+  route::middleware(middleware_name::class)->group(function(){
+   have your routes here.
+  });
+  
+  Tip: you can group the routes by prefixes and then apply single middleware to them by grouping them.
+
+
+-> appyly multiple middleware to routes and withoutmiddleware():
+
+   route::middleware(middlewareone::class , middlewaretwo::class)->group(function(){
+     
+
+     //both of the middleware applied will work on this route.
+     route::get('/admin',function(){
+      return view('admin');
+     });
+
+    //middlewaretwo will not work for this route.
+      route::get('/admin/content',function(){
+      return view('admin-content');
+     })->withoutmiddleware(middlewaretwo::class);
+
+   });
+ 
+
+-> Alias of middleware.
+lets say you are making a route only accessable to the amdin. 
+
+route::middleware(checkRole::class . ':admin')->group(function(){
+  //alias -> (':admin') concatinated with middleware
+
+     route::get('/admin',function(){
+      return view('admin');
+     });
+
+      route::get('/admin/content',function(){
+      return view('admin-content');
+     });
+});
+
+
+ -Get the middleware alias in the logic of middleware.
+
+   public function (Request $req, string $role){ // $role is for alias
+    if($role !== "admin" ){
+      return throw new HttpNotFoundException();
+    }
+    return view('admin');
+   }
+
+-> apply middleware in a controller.
+   there is a interface in laravel called Hasmiddleware which has a function called middleware() use it and populate it with your own logic for the controller. always return array.
+
+use Illuminate\Routing\MiddlewareAware as HasMiddleware;
+
+   your_controller_class implements Hasmiddleware {
+      public static function middleware(){
+      return [
+               CustomMiddleware::class => ['only' => ['edit', 'update']]
+             ];
+      }
+   }
+   
+ -> throw 404 error.
+   new HttpNotFoundException(); // 404 
+   abort(404); // 404 
+
+
+---------------------LARAVEL TINKER------------------------------
+
+It is a REPL for laravel which allow us to interept with our application on command line.
+it can be used to expriment something or debug.
+
+-> we can write php code and run it on cmd using tinker.
+
+-> Start Tinker enviorment.
+   php artisan tinker
+
+-> you can access in app variables too.
+
+
+------------------------LARAVEL DATABASE---------------------------
+Laravel Database is the 'Model' part of Laravel MVC architecture.
+in a model we write database related logics perform CRUD operations.
+
+Steps to create a laravel model.
+1. Create Databse.
+2. Create Database Migration. (create table in databse)
+3. Seeding (Insert initial data in tables)
+4. Create Model.
+
+-> Create Database:
+
+  Create Database by using XAMMP or pHpMyAdmin
+
+  After creating a database we have to modify our ENV file and in ENV file 
+  - Change the database name and driver value telling laravel what db you are using like mysql,sqlLite etc.
+    for local development just change the Database driver and database name and keep everything as it is.
+
+  -Check if laravel is connected to right DB or Not using tinker.
+      php artisan tinker
+      DB::connection()->getDatabaseName();
+
+  If you are not connected to your specified DB it'll be possible that your ENV file is cached with previous DB name...so run these commands.
+
+   php artsian config:clear  -> this is to clear the previous cache.
+   php artisan config:cache -> this will re-cache the the env file with new data.
+ 
+
+-> Create Database Migration: 
+   
+   Why Migration? because using migration we can easily transfer our tables and db schema to another project or other machine using CMD command -> php artisan migrate
+    
+   By php artisan migrate other user will get the same table and fields as our not the data in it. 
+ 
+   Two ways to make a Migration.
+   1. manually going to projectfolder/database/migration/your_migration_file.php 
+   2. CMD -> php artisan make::migration migration_user_table
+
+   After Creating a migration file...
+
+   - Schema--> this is a class which has multiple methods which are used to make tables and other thing.
+   - Create table using Schema class :
+       Schema::create('table_name',function(Blueprint $table)){
+         // now $table has all the methods to define the fields in the table.
+
+         // creating fields.
+         $table->id(); // id() is a in-built function which does not requires a data type int for id.
+         $table->string('field_name',limit-> 10,20,30...);
+         $table->string('email')->unique();
+         $table->timestamps();
+       }
+
+   - After creating the table and definig the feilds of the table run a CMD command to   
+     actually make a table   
+     in the selected Database  ----->  php artisan migrate
+
+          
+-> Migrate Commands
+   - php artisan make::migration migration_name - > make a migration
+   - php artisan migrat -> perform migration on db.
+   - php artisan migrate:reset -> reset the migration folder.
+   - php artisan migrate:refresh -> this will rollback all the tables and again migrated them to the db. 
+   - php artisan migrate:rollback -> undo the last migration.
+   - php artisan migrate:fresh -> this will delete all the tables and migrate them to the db again.
+   - 
+
+------------------------MODFICATIONS WITH MIGRATION-----------------------------------    
+Two types of Modifications
+1. Columns wise Modifications
+   - Add a column.
+   - Rename a column.
+   - Delete a Column .
+   - Change Column order.
+   - Change DataTypes or size of column. 
+
+2. Table Modifications
+   - Rename table.
+   - Delete table.
+
+-> MOdify a Column:
+  Steps to Modify Column.
+  1. Create a new migration class with a new name like update_table-name but this time use a flag which is 
+     used to tell the laravel that this is the table i'll be working on and i wont make a new table.
+    
+     full command -> php artisan make:migration --table=your_table-name  
+ 
+ 2. Modfiy using Schema class.
+ 3. run the migrate command for changes.
+
+ -> Column Modifications :
+   - Add a column -> Schema::table('table_name',function(Blueprint $table){
+         // create a new column.
+         $table->string('col_name',col_size);
+    });
+   
+    change is that to update we are using table method of schema this time not create.
+
+   - Rename a Column :  
+     $table->renameColumn('from','to');
+     this is a new feature introduced form laravel 10 this will work for 
+     laravel-v   10 >
+     mysql-v     8.0.3 >
+     MariaDB-v   10.5.2 >     
+
+    Solution :
+    update your XAMMP 
+    Use direct sql query in up method->  DB::statement("ALTER TABLE users CHANGE name full_name VARCHAR(255)");
+ 
+   - Delete a Column : 
+     $table->dropColumn('col_name');
+     $table->dropColumn(['col_name,col_name,col_name']); -> to drop multiple column.
+
+   - Change the size of the Existing Column :
+     $table->string('col_name',new_size)->change();
+
+     make multiple changes on a column.
+     $table->integer('vote')->unsigned()->default(1)->comment('vote field after changes')->change();    
+
+   - Change order of a Column.
+      $table->after('col_name',function(){
+          $table->string('col_name');
+          $table->string('col_name');
+      }) ;  
+
+
+-> Table Modifications : 
+
+  - Rename a Table : 
+    Schema::rename('prev_table_name','new_table_name'); 
+  
+  - Drop a table :
+    Schema::dropIfExist('table_name');
+
+-> Constraints on columns with migration : 
+   - Not Null -> $table->string('col_name')->nullable();
+   - Unique   -> $table->string('col_name')->unique();
+   - Default  -> $table->string('col_name')->default('default value');
+   - Primary Key -> $table->primary('col_name');
+   - Foreign Key -> $table->foreign('col_name')->references('col_name')->on('table_name');
+   - Check    -> DB::statement('ALTER TABLE table_name ADD CONSTRAINTS col_name CHECK(condition);');
+
+-> Migration Modifiers :
+  - After('col_name') -> place a column after another column.
+  - autoincrement() -> SET INTEGER column as autoincrement only for primarykey.
+  - first() -> place the column first in the table.
+  - from(integar) -> to set a custom starting value for auto-increment.
+  - invisible() -> make column invisible for the select*  query on that table.
+
+ If a column is being used as a foreign key and try to delete or modify it then it'll send an error.
+ Solution-> cascade for onupdate and ondelete command.
+  - Foreign Key -> $table->foreign('col_name')
+                         ->reference('col_name')
+                         ->on('table_name')
+                         ->onupdate('cascade')
+                         ->ondelete('cascade');    
+
+
+     NOTE: when you use cascade for ondelete() it will effect on both of the table primary key and foreign key table so if you don't want that you can use 
+     - ondelete('set null'); -> this will set null wherever these value are being used.
+
+
+-> 3 ways to make a foreign key :
+   1. $table->foreign('col_name')->reference('col_name')->on('table_name');
+  
+   2.  $table->foreignId('col_name')->constrained('table_name');  
+   -> in this way we tell laravel the col_name we wanna make foreign key and the table we wanna join but we don't give it the primary key col_name....so laravel will search for the primary key in the table we provided.  
+
+   3.$table->foreignId('tableName_PrimaryColName')->constrained();
+    -> this will automatically go to the table name and find the primary col_name to join.....table name should be the primary key table name without s.
+
+ -> Delete constraints from columns : 
+   - $table->dropPrimary('col_name_primary'); _primary is must. 
+   - $table->dropUnique('col_name_unique');   _unique is must. 
+   - $table->dropForeign('col_name_foreign'); _foreign is must. 
+   - $table->dropForeign(['col_name']); -> short method.                          
+
+
+-----------------------LARAVEL SEEDERS---------------------------
+Seeding is a Step of working on a model in which we insert initial data into our migrations.
+
+Seeding provides us with two method to insert data 
+   1. Seeders -> this is used to insert the acutal data in the migration.
+   2. factory -> this is used to insert the sample or fake data in the migration for testing purpose.
+
+
+-> Steps to setup and work with seeders.
+
+   1. Make a model-> php artisan make:model Model_name (Model_name should be same as table name and should be 
+      singular and starts with capital letter)
+
+   2. Make a seeder file-> php artisan make:seeder seeder_name (seedername has two parts model_name and Seeder word so its Model_nameSeeder) 
+
+   3. Go to the seeder file and in the run() use seeder create method to insert data.
+      require model model class in the seeder class.
+      
+      use App\Model\Model_name;
+
+      Model_name::create([
+         'col_name'=>'value',
+         'col_name'=>'value'
+      ]);
+
+      inert multiple values to the table.
+
+      $arry_of_values=collect(
+         [col_name=>'value' , col_name=>'value'],
+         [col_name=>'value' , col_name=>'value'],
+         [col_name=>'value' , col_name=>'value']
+      );
+
+      $arry_of_values->each(function($item){
+         Model_name::create($item); // this is a Eloquent method populate timestamps 
+             OR
+         Model_name::insert($item); // this is a query builder method leaves timestamps null.
+      });
+
+   4. Now go to the Seeder/DatabaseSeeder.php file and define the seeder class there. it done to tell the 
+      laravel which seeder file to run.
+
+      Seeder/DatabaseSeeder.php
+      $this->call([
+         Seeder_name::class
+      ])    
+
+   5. run the command to seed.
+      php artisan db:seed
+
+      
+  NOTE: 
+  - Each model is made for a specific table and name of the model should be same as the name of the table(in  
+    singular form) it is being used for. (table=users , model=User)
+
+  - When making a Seeder class name it ->  model name ending with the Seeder word.(UserSeeder).
+
+  - Laravel will automatically assumes that the table is the plural form as the model name.
+    (M.User -> T.users)     
+
+
+-> Insert Fake or Dummy data using Seeders : 
+   Model_name::create([
+      'col_name'=>fake()->name();
+      'col_name'=>fake()->email()->unique();
+   ]);
+  -name() & email() are built in method they will populate the table with random name and   email.
+
+  you can use loop to insert multiple fake data at once. 
+
+
+-> Steps to step up seeding with factory :
+ 
+ 1. Make a model -> php artisan make:model Model_name (same as for the seeder)
+
+ 2. Make a factory class -> php artisan make:factory ModelName_Factory
+
+ 3. Go to the Factory class and insert data. Function which is responsible to insert data  
+    ulike seeder returns an Array.
+    insert data like -> 'col_name'=>fake()->name();
+                        'col_name'=>fake()->unique()->email(); 
+
+ 4. Go to the Seeders/DatabaseSeeder.php file and import your model 
+    there and tell laravel which model factory to run and for how many times insert data.                          
+
+    Ex : use App\Models\model_name;
+         model_name::factory()->count(5)->create();
+
+        here count is the number of records to insert in the migration.
+
+ 5. run the command to apply the effects of factory.
+    php artisan db:seed 
+
+-> Some general Formats for fake data :
+   - name()
+   - numberbetween(1,10) -> get number from a range
+   - email()
+   - address()
+   - city()
+   - phoneNumber()
+   - password()
+    
+ Note :if you work with the previously made model then it wil throw eror for the factory    
+       insertion "Call to undefined method App\Models\model_name::factory()" 
+       this is beacuse laravel does not know that your model has a factory too. so to tell that write this in your model class.    
+
+       use Illuminate\Database\Eloquent\Factories\HasFactory;
+       use HasFactory;
+
+      then run the command to db:seed.
+
+
+  NOTE : model_name::factory()->count(5)->create(); or model_name::factory(5)->create();
+        this can be run through seeder class to where we are inserting data using seeder method.
+
+-> Factory Commands : 
+  - php artisan make:factory model_nameFactory -> make a factory class.
+  - php artisan make:factory model_nameFactory --model=model_name -> make factory and model.
+  - php artisan make:model model_name -f -> make model and factory class same as model_name
+  - php artisan db:seed -> perform factory seeding
+  - php artsian migrate:fresh --seed -> make migration and do seeding.
+
+
+---------------------------LARAVEL QUERY BUILDER--------------------------
+
+This is a step in which laravel model is created. Query Builder is used to perform CRUD operations on Laravel Model.(db)
+It is used in components.
+
+-> Query Builder provides faster database coding.
+-> Prevents SQL injection beacause in the backend query builder is using php PDO for parameter binding.
+-> Query Builder is can be used in any laravel supported Database like mysql lite,mysql,postgreSql.
+
+-> Steps to Work with Query Builder :
+  1. make a controller -> php artisan make:controller controller_name
+  2. Go to the controller file and do these steps.
+     - use Illuminate\Support\Fascades\DB; 
+     - then use DB to perform CRUD operations. 
+       DB::table('table_name')->get();
+
+    full example:
+      use Illuminate\Support\Fascades\DB; 
+     
+      class controller_name extends controller{
+      // getUsers() is reading the data from table users and get() always returns data in json form.
+        public function getUsers(){
+         $users=DB::table('users')->get();
+         return $users; //you can access the $users using foreach loop or send it to a view and use foreach.
+        }
+      }
+
+   3. Make a route for the controller 
+      import your controller class first 
+      Route::get('/users',[controller_name::class,'getUsers']);
+
+-> Dive deep into DB class and get();
+  DB class is connected to the database we defined in the EVN file.
+  so now to get some custom values from database...DB class provides Select() and where clauses.
+
+  - Get specific column value-> DB::table('table_name')->select('col_name','col_name')->get();
+  - Conditions using where clause :
+    DB::table('table_name')->where('col_name','conditional_operator','value')->get();
+    
+   example: DB::table('users')->select('city')->where('city','=','karachi')->get();
+
+   - multiple Where clasue :  
+      DB::table('table_name')
+      ->where('col_name','conditional_operator','value') // condition 1
+      ->where('col_name','conditional_operator','value') // condition 2
+      ->get();
+      
+    - You can perform multiple conditions using array in where clause.
+      DB::table('table_name')
+      ->where([
+         'col_name','conditional_operator','value', // condition 1
+         'col_name','conditional_operator','value', // condition 2
+         'col_name','conditional_operator','value' // condition 3
+         ]) 
+      ->get();
+   - Where or Where condition : 
+     
+    DB::table('table_name')->where('col_name','conditional_operator','value')
+    ->orWhere('col_name','conditional_operator','value')
+    ->get();
+ 
+
+   - Some Useful Where methods : 
+     - whereBetween('age',[20,30]);-> filter a column value in a range.
+     - whereNotBetween('age',[20,30]);-> oppsite of between.
+     - whereIn('col_name',['value','value']);-> filter and get only these records.
+     - whereNull('col_name');
+     - whereMonth('col_name','mm or m');
+     - whereYear('col_name','yyyy');
+     - whereDay('col_name','dd or d');
+     - whereTime('col_name','hh-mm-ss');
+     - whereDate('col_name','yyyy-mm-dd')
+      
+   - Some useful method to select data :
+     - first(); -> this will retun the first record in the db.
+     - latest(); -> this will retun the latest entered record.
+     - oldest(); -> this will retun the oldest record in db.
+     - inRandomOrder()-> get a random record.
+     - Limit()/take() -> get records in a limit.
+     - offset()/skip() -> from where to start.
+     - count() -> count total num of records.
+     - max('col_name') -> get max value for a column.
+     - min('col_name') -> get minimum value for a column.
+     - sum('col_name') -> add all the value of column.
+
+-------------------------QUERY BUILDER INSERT----------------------------
+use Illuminate\Support\Fascades\DB
+ 
+ -> insert a single record :
+ 
+ DB::table('table_name')->insert([
+    'col_name'=>'value',
+    'col_name' => 'value'
+ ]);
+
+-> insert multiple records : 
+   DB::table('table_name')->insert([
+
+      [
+      'col_name'=>'value',
+      'col_name' => 'value'
+     ],
+
+     [
+      'col_name'=>'value',
+      'col_name' => 'value'
+     ],
+
+      [
+      'col_name'=>'value',
+      'col_name' => 'value'
+     ],
+ 
+ ]);
+
+-> Check value for unique constrained column : 
+
+   if(!DB::table('table_name')// this will check the values for the given column and if not exists then inset
+   ->where('col_name','value')
+   ->where('col_name',value)
+   ->exist()){
+
+     DB::table('table_name')->insert([
+    'col_name'=>'value',
+    'col_name' => 'value'
+     ]);  
+   }
+
+-> Upsert mehtod() : 
+  it is also used for checking unique values. It works a bit differently as when it gets the values and there is duplication for a unique column then upsert method will update all the other columns with new values and keep the unique column same. If its a unique value then it'll create a new record.
+
+  Syntax : 
+  upsert(
+    ['col_name'=>'value','col_name' => 'value'],
+     [ unique_column_name], // on the basis of this col uniqueness and insertion will occurs.
+
+     // and if you wanna change only a specific column value if not unique then add one more array of col.
+      [col_name] // only this column's value will be changed.
+  );
+
+
+-> get id whenever record is inserted : 
+ -this works for only when there is a autoincrement col in the table.
+
+      $id = insertGetId(
+         [
+         'col_name'=>'value',
+         'col_name' => 'value'
+         ]
+         ); 
+      return $id;   
+
+
+-----------------------QUERY BUILDER UPDATE---------------------
+
+use Illuminate\Support\Fascades\DB;
+
+-> update a record : 
+
+ $updated=  DB::table('table_name') // this returns true or false
+  ->where('col_name','value')
+  ->update([
+     // values to update here
+     'col_name'=>'value',
+     'col_name'=>'value'
+  ]);
+
+  retun $update;
+
+-> Update when id is unknown : 
+   updateorinsert() -> this method is used to check if a row has a value of column then update a specific column and id the check fails then make a new record.
+
+   DB::table('users')->updateorinsert(
+
+      [
+          // these columns will be checked for a record.
+         'col_name'=>'value',
+         'col_name'=> 'value',
+      ],
+      [
+          //  if check passe then on that record this column will be updated.
+          // if check fails then new record will be made with check columns value and update column value.
+
+         'col_name'=>'new_value'
+      ]
+   );
+
+------------------------------- QUERY BUILDER DELETE------------------------------
+
+-> Delete all records : 
+
+  use Illuminate\Support\Fascades\DB;
+
+  DB::table('table_name')->delete();
+
+-> Delete a specific record : 
+   
+   use Illuminate\supported\Fascades\DB;
+
+    DB::table('table_name')->where('id','2')->delete();
+
+------------------------------- LARAVEL PAGINATION------------------------------
+Laravel gives us some methods to perform pagination on DB. Each method has its own pros and cons.
+
+-> Pagination methods : 
+  
+  1.paginate() :
+    
+    DB::table('table_name')->paginate('limit_value');
+
+   this method is used for pagination and the value we gives it works for limit and offset too and it uses get method to get the data too.
+
+   It results in numbering pagination like -> < 1 2 3 4 >
+
+  2. simplePaginate() :
+    DB::table('table_name')->simplePaginate('limit_value');
+
+    works same as paginate but results in different ui like ->  | <-prev  next-> |  
+
+ 3. cursorPaginate():
+    DB::table('table_name')->orderBy('col_name')->cursorPaginate('limit_value');
+
+    this is the fatest from all of these it is used for when there are millions of records but its not mostly used due to the ui results it gives and technicallity.
+    
+    cons: 
+    - it gives button pagination results like -> | <-prev  next-> | which is outdated.
+    - it uses idexing on the table for fast executions which is basically making a cache of the table in the 
+      memory which takes space and slows down other db operations.
+
+  it is widely used for app which has inifnite scrolling to get the data as user scroll.
+
+
+After setting up the pagination in your controller you will start to get records as per limits...but you won't see the controls for the pages. For that use this in your blade file.
+
+    {{$data_returned_from_controller->links()}} // this will include controls for the pagination.
+
+-> Styling Pagination links : 
+  By default pagination use tailwind css to style its links. To use the default Tailwind Css.
+  
+  - Add this cdn link in the head tag.
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  to remove the tailwind and apply custom css 
+  - type this when class link function for pagination: 
+  
+   {{$pagination_array->link('pagination::simple-default')}} -> this will have not styling for you to style.
+                                                                 this is for simplePaginate() and cursorPaginate().
+
+   
+    {{$pagination_array->link('pagination::default')}} -> this is for paginate method.  
+
+-> Detailed paginate methods : 
+  we can modify paginate methods to get the results as our interest.
+
+  each pagination method has multiple parameters which there own role.
+
+   ex: paginate(
+         '1st parameter',
+         '2nd parameter',
+         '3rd parameter',
+         '4th parameter'
+         )
+
+   - 1st parameter is for the limit of records per page.
+
+   - 2nd parameter is to tell pagination method that what columns to read from table by default its selecting 
+     all and 2nd parameter value is '*'. We can give custom value to it like 
+     'col_name' for single column. 
+     ['col_name','col_name'] for multiple column.
+
+   - 3rd parameter is used to change the name of key for showing page number in the url as we change the page.
+     default is 'page' we can set it to any word we like.
+
+   - 4th parameter is to set a custom starting page...default is 1 for page one if we set it to 2 then recods 
+     for page 2 will be displayed first
+
+
+----------------JOIN TABLES QUERY BUILDER-----------------------
+-> simple join : 
+
+DB::table('table1')
+->join('table2','table1.col_name' , '=' , 'table2.col_name')
+->get();
+
+-> Using ON method : 
+  DB::table('table1')
+ ->leftjoin('table2',function(JoinClause $join){
+  $join->on('table1.col_name'='table2.col_name')
+ })
+ ->get();
+
+-> get selected columns :   
+DB::table('table1')
+->join('table2','table.col_name'='table2.col_name')
+->select('table1.*','table2.col_name')
+->get();
+
+
+EX : 
+ $users = DB::table('users')
+            ->join('tools', 'users.tool', '=', 'tools.id')
+            ->select('users.Name', 'users.age', 'users.tool', 'tools.tool')
+            ->where('users.age', '<', '40')
+            ->where('tools.tool', 'hammer')
+            ->get();
+        return $users;
+
+
+------------------JOIN with UNION -----------------------
+for union and join 3 tables will be used.
+2 for union and 1 for joining.
+
+table1,table2,table3
+
+
+// a simple union if two tables.
+$table1_data =DB::table('table1');
+
+$table2_data =DB::table('table2')
+            ->union($table1_data)
+            ->get();
+
+// union with join : 
+$table1_data =DB::table('table1')
+              ->join('table3','table1.col_name','=','table3.col_name')
+              ->get();
+
+// if one table has join when unioned then its a must to join other table too.
+$table2_data =DB::table('table2')
+              ->join('table3','table2.col_name','=','table3.col_name')
+              ->union($table1_data)
+              ->get();
+
+- you can use select and where clause for more precise data.
+
+
+-------------------------------WHEN METHOD--------------------------------------------
+when() method is a laravel method for db used to apply where clause on the basis of a condition.
+
+   DB::table('table_name')
+   ->when('condition', function($query){
+
+      // this function will run if when condition is true.
+      $query->where('col_name','col_name');
+
+   },function($query){
+
+      // this function will run if the when condition is false.
+       $query->where('col_name','col_name');
+   }) 
+   ->get();
+
+   so when() method has 3 parameters 
+   1 for condition
+   2 function with where if condition true
+   3 function with where if condition false
+
+------------------------------CHUNK METHOD-------------------------------------
+It is a Laravel method used to get data in parts so load on our server's memory is less because it doesn't has to load all the thousands or millions of recods in single run making it very useful for performance.
+
+
+DB::table('table_name')
+->orderBy('id') // must be a primary key of the table
+->chunk('num_of_records_to_get 10,15,20...',function($data){
+       // use loop to display recods
+       foreach($data as $item){
+         echo $item->col_name;
+         or 
+         retun view('view_name',['data'=>$item]);
+       }
+});
+
+
+Note : when using chunk it gets data in parts....but when you display the records it'll load all the data from the table...lets say table has 1000 records and we display chunk data then all the 1000 recods will be displayed which make a point that if i am getting all the data then where did that "getting in parts" went?
+ 
+chunk did get all the recods in defined number of records.....how chunk works is that lets say we have defined number of records 20 so chunk will get the 20 recods first and 'clean the memory' before getting other 20 upto 1000 records, this way chunk is able to get data in more fast and efficient way. 
+
+
+-> Update and Delete using chunk : 
+  If we wanna update or delete thousands or millions of records we can use chunk for that too.
+   
+    DB::table('table_name')
+    ->orderBy('id') // must be a primary key of the table
+    ->chunkById('num_of_records_to_get 10,15,20...',function($data){
+       foreach($data as $item){
+        DB::table('table')
+        ->where('id',$item->id)
+        ->update(['col_name'=>'value','col_name'=>'value']);
+       }
+   });
+
+   same goes for delete.
+
+-----------------------------LARAVEL RAW SQL QUERY-------------------------------------
+-> Select data from table : 
+  use Illuminate\Support\Fascades\DB;
+
+  DB::select('SELECT * FROM table_name ');
+  DB::select('SELECT * FROM table_name WHERE id=?',[1]); 
+  //why ? in where condition, its because at the backend laravel uses PHP PDO.
+
+-> Insert data in a table :
+   DB::insert('INSERT INTO table_name ('col_name','col_name') VALUES (?,?)',['value','value']);
+
+-> Update data in a table : 
+  DB::update('UPDATE table_name SET col_name=? WHERE id=?',['value',1]);
+  DB::update('UPDATE table_name SET col_name='value' WHERE id=?',[1]);
+
+-> Delete Data from a table : 
+  DB::delete('DELETE FROM table_name WHERE col_name=?',['value']);
+
+
+------------------------------------ELOQUENT ORM------------------------------------
+it is a way to intereact with database just like query builder but in much simpler and clear form.
+
+-> Eloquent means (clear and strong)
+-> ORM (object relations mapper) by this...we can easily make complex database relations like 
+  one-to-one , one-to-many, many-to-many.
+-> observers and scopes this is provided by Eloquent orm by which we can write a query one time and use it    
+   multiple time
+
+-> steps to work wit EloquentORM.
+ - we need a model and a controller. so make them.
+ - then import your model class in your controller class.
+ - use it to perform operations like model_name::all();
+
+ example : 
+
+  use App\Models\model_name;
+
+  public function show (){
+   $uers=model_name::all();
+   return $users;
+  }
+
+ -CRUD methods of Eloquent ORM : 
+  - all(); -> to get all of the records
+  - get(); -> to get selective records.
+  - create(); -> to insert data.
+  - update(); -> update record.
+  - delete(); -> delete record.
+  - find('id_num')/find('id_num',['specific_col','specific_col']); -> this to get record of given id num.
+      
+-> Check if record exist or not exist: 
+ ->where('id',1)->exists(); 
+ ->where('id',1)->doesntExists()   
+
+
+Note : when a model is made it works for only one table of the database. Which table the model will work for depends on how you name your model.
+    
+    - for table users
+     model->  User 
+     controller -> UserController
+
+     now what will happen that Eloquent assume that your if your model is User then it is made for a table named users in the database....so basically whatever you name your model it will lowercase it and pluralize it then look for that table in the database.
+
+     what if there is no table which Eloquent assumed? 
+     tell explictly in your model that this is the name of table to work on.
+
+     - go to your model class and type.
+      protected $table = 'table_name'; -> this will overide the default assummed name of table.
+
+   - So beacuse of all of this you have to make separate model for each of your controller class and table.
+
+
+-> Joining of tables works same as the query builder only difference is thar in Eloquent we use model_name
+
+-> Skip certain column when getting all of them. 
+    // in your model class 
+    protected $hidden = ['col_name', 'col_name'];
+
+    - it won't effect the query, query will get all the data but when data is converted to JSON view then these columns are skipped...unless you explicitly select them. or
+     model_name::all()->makevisible('hidden_col_name');
+
+->  CRUD USING ELOQUENT ORM :
+ 
+ - Reading data : 
+   use App\Models\model_name; 
+   
+   model_name::all(); 
+
+   - Using select method -> model_name::select('col_name','col_name')->get();
+
+   - conditional reading -> model_name::where('col_name','operator','value')->get();
+
+   - multiple conditions -> model_name::where('col_name','operator','value')
+                                       ->where('col_name','operator','value')
+                                       ->get();
+                                                OR
+                                    model_name::where(
+                                       ['col_name','operator','value'], // condition1
+                                       ['col_name','operator','value'] // condition2
+                                       )
+                                    ->get();
+
+   - OrWhere -> model_name::where('col_name','operator','value')
+                                       ->Orwhere('col_name','operator','value')
+                                       ->get();
+
+
+-Inserting Data :
+ There are two ways to insert data using Eloquent ORM.
+
+ -> Method 1 to insert data : 
+  // in your controller
+  use App\Models\model_name;
+
+  // in your contorller method                              
+  $model_instance = new model_name;
+
+  $model_instance->col_name='value';
+  $model_instance->col_name='value';
+
+  $model_instance->save();
+
+ -> Method 2 to insert data : (Mass Assignment)
+  // in your controller 
+  use App\Models\model_name;
+
+  //in your controller method.
+  Model_name::create([
+      col_name=>'value',
+      col_name=>'value',
+      col_name=>'value', 
+  ]); 
+
+  Note: By default Create method for Eloquent ORM is locked by laravel so in order to use it we have to do...
+    - go to your model class.
+     type -> protected $guarded=[]; // make $guarded variable empty.
+               OR
+            protected $fillable=['col_name','col_name']; // Provide name of the column to insert data in.
+
+-> Update data using Eloquent ORM ;
+   Method 1 : 
+
+     // in your controller
+  use App\Models\model_name;
+
+  // in your contorller method                              
+   $user_found=model_name::find($id);
+   $user_found->col_name='value';
+   $user_found->save();
+
+   Method 2 : (Mass Updation)
+   This method is used to update more than one records at a time.
+    // in your controller
+    use App\Models\model_name;
+
+    $updated= model_name::find($id);
+    $updated->col_name='value';
+    $updated->save();
+     
+        OR 
+    model_name::where('col_name','value')->update([
+      'col_name'=>'value',
+    ]);
+
+  -> Delete data using Eloquent ORM : 
+    - Method 1.
+           // in your controller
+    use App\Models\model_name;
+
+    $record_found=model_name::find($id);
+     $record_found->delete();
+
+    - Method 2 
+        // in your controller
+    use App\Models\model_name;
+
+// destroy only work with id column 
+    model_name::destory($id); 
+    model_name::destory($id1,$id2,$id3);
+    model_name::destory([$id,$id2,$id3]);
+
+
+-----------------ELOQUENT ORM ADVANCE METHODS-------------------
+these are advance Eloquent ORM CRUD methods.
+
+-> FindorFail:
+ model_name:: findorfail($id); -> this is used just as find method but when findorfail methods doesn't 
+                                    brings any result then it takes us to 404 page unlike find method which crashes the app.
+
+-> Chunk method: 
+   work same as query builder chunk.
+ model_name::chunk('num_of_records_to_get',function($data){
+     return $data;
+   });
+
+-> update data using chunkById: 
+  model_name::where('col_name')->chunkById('no_of_records',function($users){
+    $users->update(['col_name'=>'value']);
+  });
+
+-> Lazy method : 
+  this method gets recods one by one ...gets a record clears server memory then gets another record.
+  this is best for getting massive dataset with relations.
+
+   $data=model_name::lazy();
+   return $data // or send it to a view.
+
+-> update by lazyById : 
+   
+   model_name::where('col_name','value')
+   ->lazyById(num of records)
+   ->each->update(['col_name'=>'value']);
+
+-> Cursor method : 
+   this is to get massive dataset with no relations between them.
+  
+   $data = ModelName::cursor()->collect(); // Convert generator to collection
+   return view('yourview', compact('data'));
+
+
+-> Create data with advance  Eloquent ORM : 
+  use App\Models\model_name;
+
+  model_name::firstOrCreate(
+   ['col_name'=>'value'],  // check for this column.
+
+  //if not found then create with these values
+   [     
+      'col_name'=>'value',
+      'col_name'=>'value'
+   ]
+  );
+
+// how this firstOrCreate method works that it take two arrays in the first array we give a column and value and when this method runs it finds the record according to column in first array if exists then it will show that record....and if not then it will create a new record with data.
+
+-> Update data with advance Eloquent ORM Method :   
+     use App\Models\model_name;
+
+  model_name::UpdateOrCreate(
+   ['col_name'=>'value','col_name'=>'value'], // find 
+   [
+      'col_name'=>'value',     // update
+      'col_name'=>'value'
+   ]
+  );
+
+// how this UpdateOrCreate method works that it take two arrays in the first array we give a column and value and when this method runs it finds the record according to column in first array if exists then it will update the columns given in second array....and if not then it will create a new record with data.
+
+
+-> update advance Eloquent ORM method :
+  use App\models\model_name;
+
+  model_name::upsert(
+   [
+      'col_name'=>'value'     //array 1 
+      'col_name'=>'value'   
+   ], 
+   ['col_name'],            // array 2 unique column name
+   ['col_name']             // array 3 if value match then update this col...it could be multiple columns
+  );
+
+ // so how this upsert method work is that this work when your table has a unique column in it. It takes 3 arrays, second array is crucial which is the name of unique col_name ...that same column with a value is given in array 1 so when this method run it finds that if the given value for that unique column exists or not....if it exists then it will update that column of the record which is given in array 3....if value of the unique column does not exists then it will make a new record.
+
+---------------------------ELOQUENT MODEL CONVENTIONS-------------------------------
+-> Changing table name : 
+  when a model is made it is made according to the table we are going to use.....like UserModel->users(table)
+  so what if i change table name from users to ex-users ...this will throw an error by the model...so to tell model that now use the new name of the model while keeping model's name same as it is.
+
+  // in your model file: 
+  protected $table='ex-users';
+
+  // for renaming a primary key
+  protected $primary_key='new_primary_col_name';
+
+  // to add string in a primary_key col such as id
+  public $incrementing=false;
+
+  // allow string data type to primary
+  protected $keyType='string';
+
+  // skip updated_at and created_at column while inserting 
+   public $timestamps=false;
+
+ // use other name for created_at and updated_at columns
+   const CREATED_AT = 'creation_at';
+    const UPDATED_AT = 'modification_at'; // optional 
+
+ // default value for fields.so if user skips these columns value in the form then these value will be inserted as default.
+
+ protected $attributes=[
+   'col_name'=>'value',
+   'col_name'=>'value'
+ ]; 
+
+ // change database for a specific model, use 2 database in one website...sqlite for this model.
+ protected $connection ='sqlite';
+
+ // random number for primary key.
+ - for this you must have changed the datatype to string of primary key. after that
+  use HasUuids; -> 36 characters long
+  use HasUids;  -> 26 characters long 
+
+
+-------------------------------------ARRAY ACCESSING TECHNIQUES----------------------------------------
+ -> Indexed array : 
+   $array=['value1','value2','value3'];
+   echo $array[0].$array[1].$array[2];
+
+   - with loop :
+   foreach($array as $arr){
+   echo $arr.'<br>';
+   }
+
+-> Associative Array : 
+   $array = ['name'=>'name1','city'=>'cityvalue'];
+   $echo $array['name'].$array['city'];
+
+   - with loop : 
+    foreach($array as $key=>$value){
+      echo $key.$value.'<br>';
+    }   
+
+-> Nested Associative Array : 
+  $array=[
+   ['name'=>'value' , 'city'=>'value'],
+   ['name'=>'value' , 'city'=>'value'],
+   ['name'=>'value' , 'city'=>'value'],
+  ]    
+
+  echo $array[0]['name'].$array[0]['city'];
+
+  - with loop : 
+   foreach($array as $value){
+      echo $value['name'] .$value['city'];
+   }
+
+
+-> check if key exists in an array :
+    
+   if (isset($array['email'])) {
+    echo $user['email'];
+   } else {
+      echo "Email not set";
+   }
+
+-> remove values : 
+  unset($array['key']);
+
+-> print or debug entire array : 
+
+   print_r($user); // readable
+   var_dump($user); // includes types
+   dd($user); // Laravel helper: dumps and stops  
+
+-> Get all key or values : 
+    array_keys($array);   
+   array_values($array);   
+
+
+

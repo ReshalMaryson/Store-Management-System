@@ -1,0 +1,212 @@
+  :root {
+  --store-bg: rgb(0, 0, 134);
+} 
+.activities_container{
+  padding: 0.5rem;
+}
+
+#goback{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+#goback img{
+  width: 30px;
+  cursor: pointer;
+}
+
+/* search block */
+.search_activities{
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0.3rem;
+  padding-right: 1rem;
+}
+
+.searchbyfilter{
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding-left: 1rem;
+}
+.searchbyfilter.hide{
+  display: none;
+}
+
+.searchbyfilter select{
+padding: 0.4rem;
+width: 100%;
+border: 1px solid var(--store-bg);
+border-radius: 3px;
+}
+
+.searchbyfilter img{
+  width: 20px;
+}
+.searchbycustomdate{
+display: none;
+}
+.searchbycustomdate.active{
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  width: 60%;
+}
+.dateEntry{
+  display: flex;
+}
+.entrywrap{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 0.3rem;
+  width: 70%;
+}
+.dateEntry label{
+font-size: 0.8rem;
+font-weight: bold;
+font-family: sans-serif;
+}
+
+.dateEntry input{
+ padding: 0.3rem;
+ border: 1px solid var(--store-bg);
+ border-radius: 3px ;
+ width: 60%;
+ cursor: pointer;
+}
+.wrap_customdate_btns{
+  margin: 0 auto;
+  width: 70%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.searchbycustomdate .searchcustombtn{
+  width: 10%;
+  padding: 0.2rem;
+  background-color: var(--store-bg);
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;  
+  transition: 150ms ease-out;
+}
+.searchbycustomdate .searchcustombtn:hover{
+  background-color: rgb(45, 45, 247);
+  transition: 150ms ease-in;
+}
+
+.searchbycustomdate .clearcustomsearch{
+  width: 10%;
+  padding: 0.2rem;
+  background-color: rgb(201, 3, 3);
+  border: none;
+  outline: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;  
+  transition: 150ms ease-out;
+}
+
+.searchbycustomdate .clearcustomsearch:hover{
+  background-color: rgb(145, 2, 2);
+}
+
+
+.filterbyactiontype{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25%;
+}
+
+.filterbyactiontype label{
+ width: 35%;
+ font-size: 0.8rem;
+}
+.filterbyactiontype select{
+  padding: 0.4rem;
+  width: 100%;
+  border: 1px solid var(--store-bg);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* refresh */
+.refreshlogs{
+  margin: 0 auto;
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  width: 98%;
+  margin-top: 15px;
+}
+.refreshlogs img{
+  width: 25px;
+  cursor: pointer;
+}
+
+
+
+/* Show all product block */
+#show_activity {
+  /* margin: 1rem; */
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-family: Arial, sans-serif;
+  scrollbar-width: thin;
+   scrollbar-color: #002984 #f1f1f1;
+}
+
+/* Header row styling */
+#activity_items_title {
+  display: grid;
+  grid-template-columns:  2fr 2fr 1.8fr 3fr 2fr 2fr 1.7fr;
+  background-color: #002d96;
+  color: white; 
+  font-weight: bold;
+  padding: 10px;
+  margin: 0;
+  list-style: none;
+  border-bottom: 2px solid #ccc;
+}
+
+
+/* Data rows wrapper */
+#activity_wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 285px;
+  overflow: auto;
+  scrollbar-width: thin;
+    scrollbar-color: #002984 #f1f1f1;
+}
+
+/* Each product row */
+#activity {
+  display: grid;
+  grid-template-columns:  1.9fr 2fr 2fr 3fr 2fr 2fr 2fr;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  align-items: center;
+  font-size: 0.85rem;
+}
+#activity:hover {
+  background-color: #f9f9f9;
+}
+
+#activity p{
+  text-align: left;
+}
+
+

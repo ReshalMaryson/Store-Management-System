@@ -1,0 +1,95 @@
+/* :root {
+  --store-bg: rgb(0, 0, 134);
+}
+#create_user_container{
+  width: 100%;
+    padding: 0.5rem;
+}
+
+form{
+    display:  flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 40px;
+   width: 100%;
+}
+#user_entry{
+    width: 22%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+#user_entry label{
+font-size: 0.8rem;
+font-weight:550;
+
+}
+#user_entry input , select{
+    width: 200%;
+    border: 1px solid var(--store-bg);
+    padding: 0.3rem;
+    border-radius: 3px;
+}
+
+.role_entry select{
+    width: 200%;
+}
+
+#user_create_btn{
+    width: 10%;
+} */
+
+#create_user_container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+#create_user_container form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px 40px;
+}
+
+#user_entry {
+  display: flex;
+  flex-direction: column;
+}
+
+#user_entry label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: black;
+}
+
+#user_entry input,
+#user_entry select {
+  padding: 10px;
+  border: 1px solid #001489;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+#user_create_btn {
+  grid-column: 1 / 3;
+  justify-self: center;
+  width: 20%;
+  padding: 10px 20px;
+  background-color: #001489;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#user_create_btn:hover {
+  background-color: #002cc9;
+}

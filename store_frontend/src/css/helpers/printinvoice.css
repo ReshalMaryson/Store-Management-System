@@ -1,0 +1,207 @@
+/* Invoice Print Styles */
+
+
+#print_conatiner, #print_conatiner * {
+    visibility: visible;
+  }
+
+  #print_conatiner {
+    /* position: absolute;
+    left: 0;
+    top: 0; */
+    margin: 0 auto;
+    margin-top: 50px;
+    width:30%;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #000;
+  }
+
+  #header {
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 5px;
+  }
+
+  #header h2 {
+    font-size: 1.3rem;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  #header p {
+    margin: 2px 0;
+    font-size: 0.8rem;
+  }
+
+  #sale_receipt {
+    font-size: 0.85rem;
+    margin-top: 10px;
+  }
+
+  #billinguser,
+  #billid,
+  #dateandtime,
+  #cutomer,
+  #subtotal,
+  #printdiscount,
+  #Billtotal {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+  }
+
+  #invoice_content {
+    margin-top: 10px;
+  }
+
+  #printbill_items_title {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 3.1fr 2fr 1fr 1fr; /* Qty, Item, Rate, Amount */
+  font-weight: bold;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 4px 0;
+  margin: 0;
+  text-align: left;
+  }
+#printbill_items_title li{
+   font-size: 0.8rem;
+}
+  #print_items {
+     display: grid;
+  grid-template-columns: 3.3fr 2fr 1fr 1fr; /* Qty, Item, Rate, Amount */
+  border-bottom: 1px dashed #ccc;
+  padding: 2px 0;
+  text-align: left;
+  }
+  #item_name{
+    width: 80%;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px dashed #000;
+    margin: 10px 0;
+  }
+
+  #amountsdetails {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  #Billtotal {
+    font-size: 1rem;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+  }
+
+@media print {
+
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #print_conatiner, #print_conatiner * {
+    visibility: visible;
+  }
+
+  #print_conatiner {
+    width: 80mm; /* or 58mm if you're using a smaller thermal printer */
+    margin: 0 auto;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+  }
+
+  #header {
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 5px;
+  }
+
+  #header h2 {
+    font-size: 1.3rem;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  #header p {
+    margin: 2px 0;
+    font-size: 0.8rem;
+  }
+
+  #sale_receipt {
+    font-size: 0.85rem;
+    margin-top: 10px;
+  }
+
+  #billinguser,
+  #billid,
+  #dateandtime,
+  #cutomer,
+  #subtotal,
+  #printdiscount,
+  #Billtotal {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+  }
+
+  #invoice_content {
+    margin-top: 10px;
+  }
+
+  #printbill_items_title {
+list-style: none;
+  display: grid;
+  grid-template-columns: 3.1fr 2fr 1fr 1fr; 
+  font-weight: bold;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 4px 0;
+  margin: 0;
+  text-align: left;
+  font-size: 0.8rem;
+  }
+  #printbill_items_title li{
+    font-size: 0.8rem;
+  }
+  #print_items {
+    display: grid;
+    grid-template-columns: 3.3fr 2fr 1fr 1fr; 
+    border-bottom: 1px dashed #ccc;
+    padding: 2px 0;
+    text-align: left;
+    font-size: 0.8rem;
+  }
+    #item_name{
+    width: 80%;
+  }
+
+
+  hr {
+    border: none;
+    border-top: 1px dashed #000;
+    margin: 10px 0;
+  }
+
+  #amountsdetails {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  #Billtotal {
+    font-size: 1rem;
+    border-top: 1px solid #000;
+    padding-top: 5px;
+  }
+}

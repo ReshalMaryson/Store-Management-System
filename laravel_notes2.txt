@@ -1,0 +1,2124 @@
+---------------------------------LARAVEL ELOQUENT RELATIONS--------------------------------
+-> Eloquent ORM One-to-one Relation :  
+  this is used to join tables. One to one relation means each primary_key is used only one time as a foreign key.
+
+  like primary_key 1 is a foreign 1 in other table and is being used only one time.
+
+  - steps to setup a one-to-one relation using Eloquent:
+   1 make models and migration for both of the tables.
+   2 modify your main table's model.
+   3 make a controller of your main table and import both models there.
+ 
+ -> details
+
+   step1 :   
+   php artsian make:model model_name // model 1 
+   php artsian make:model model_name  // model 2
+
+   step2 : 
+   in your main table's model make a function
+
+   public function second_table_name (){
+      return $this->hasOne(second_table_model__name::class);
+   }
+
+  step3 :       
+  php artisan make:controller controller_name --resource
+
+  // in your controller
+  use App\Models\model_name1;
+  use App\Models\model_name2;
+
+  public function index(){
+   // get all data of table and table 2
+       $data=  model_name1::with('same_as_function_name')->get();
+       return $data;
+
+       //get according to col from table1
+          $data=  model_name1::with('same_as_function_name')->find('col_name');
+          return $data;
+
+       // where method on table1
+         $data=  model_name1::with('same_as_function_name')->where('col_name','value')->get();
+       return $data   
+
+       //where method on table2 
+         $data=  model_name1::withWhereHas('same_as_function_name',function($query){
+                    $query->where('col_name','value');
+                  })->get();
+     
+            return $data
+
+      // where method on both tables.
+         $data=  model_name1::where('col_name','value')
+                 ->withWhereHas('same_as_function_name',function($query){
+                    $query->where('col_name','value');
+                  })->get();
+             
+              return $data
+
+  }
+
+NOTE: FK and PK data types should be same ....Has method is used for the table whose data is being used in other table and belongsTo is used for the table which is using the data from another table. 
+
+-> Inverse Relation : 
+  it is possible only on tables which are already joined as one-to-one.
+
+  steps to make a Inverse relation: 
+ 
+  step 1: 
+      //in your table2 model make a method
+
+     public function table1_name(){
+      return $this->belongsTo(table1_model::class);
+     }      
+  step 2: 
+   get data as you do in simple join 
+
+
+
+-> Insert data using Eloquent ORM one-to-one relation : 
+   once you have the relation setuped.
+
+   // in your table1 controller
+   import both table models
+
+    $table1= table1_model::create([
+     'col_name'=>'value'
+     'col_name'=>'value'
+   ]);
+
+   // so for second table
+   $table1->function_made_in_table1Model->create([
+      'col_name'=>'value',
+      'col_name'=>'value'
+   ]);
+
+   // create is a locked method by laravel so unlock it in both of the models protected $guarded=[];  
+
+
+-> Eloquent ORM One-to-Many Relation :  
+  When a record of a primary table has relation with more than one records of foreign table.
+  
+  steps to make a one to many relation : 
+
+  1- make a relation between both of the table using php my admin.
+  2- make model for both of the table:  
+     php artisan make:model model_name --resource
+
+  3- describe relation in models.
+     // keep in mind.
+     now there are two tables 1 which has the FK and one which has the PK.
+     - table FK-> belongsTo table Pk.
+     - table PK-> HasMany table FK.
+
+    - in your FK table model
+     public function pk_table_name(){
+      retun $this->belongsTo(PK_table_model::class,'PK_col');
+     }
+
+    -  in your PK table model: 
+     public function pk_table_name(){
+      retun $this->HasMany(FK_table_model::class,'FK_col');
+     }
+ 
+
+  4-  Make a controller file for primary table :
+      // use both of the models in your controller
+
+     // then make a method to work with them
+
+      public function getData(){
+         $data=table1_model::with('function_made_in_other_table's_model')->get();
+         return $data;
+      }
+
+
+      // getting data is same as getting for one to one.
+
+      // some other methods for one to many
+      -> Has();
+       table1_model::has('table2')->get(); // this will get those records from table1 which has a relation 
+                                             with table2. 
+
+       table1_model::has('table2')->with('table2')->get(); // this will get those records from table1 which 
+                                                            has a relation with table2 along with table2 data
+     
+      -> doesntHave();
+        
+       table1_model::doesntHave('table2')->get(); // this will get those records from table1 which do not   
+                                                   have a relation 
+        
+
+      -> withCount();
+       
+       table1_model::withCount('table2')->get(); // this will count and return the number of relation of each 
+                                                   records from primary table.
+         
+
+- You can perform reverse relation on these table too. reverse Relation is done by foreign table upon primary 
+  table
+
+  steps : 
+  - In your foreign table make a method just like you did in primary table which returns
+     returns $this->belongsTo('Primary_table_model::class');
+
+
+-> Eloquent Many to Many Relation : 
+  When 2 tables have have multiple relations between each records. table1's record is related to multiple table2's records and table2's record is related to multiple table1's records.
+
+  -structure : 
+  In many to many relation data is joined together by a 3rd table in which there are two columns one for table1 and one for table2 both columns are FK as they hold the PK of table 1 and table 2.
+
+ - Steps to setup many to many relation : 
+  1. make model for three of the tables.
+  2. in the model class of the table which will use the data from other table basically primary table : 
+    return $this->belongsToMany(table2_model::class,'3rd table name');
+
+    ///do this in table 1 and table 2 model
+
+  3. Read data : 
+    // make a controller class for both of the tables .
+    use app\models\model_name
+    $data=model_name::find(); OR get();
+    return $data->function_made_in_model;   
+
+
+- Modify Add and Delete many to many tables : 
+  1.Attach() -> to add data.
+  2. Detach() -> delete data.
+  3. Sync() -> add, update ,delete data   
+
+   this all is done on the table which has the PK of both table or pivot table.
+
+
+  - Attach () : 
+    $data=table1_model::find(id);
+    $data->function_made_in_table1Model->attach(id of the record of table 2); 
+    //pass array of id to assign multiple records 
+
+ - detach() : 
+   $data =table1_model::find(id);
+   $data->function_made_in_table1Model->detach(id or array of id);
+
+   // detach() will get the id in find() and ids or id in detach to get the pair in the pivot table [1-2,1-3] 
+
+  - Sync() : 
+    - Sync insert :
+      $data = table1_model::find(id);
+      $data->function_made_in_table1Model->sync(id);  //this will find take both ids and make a record in  
+                                                        pivot table if the pair of ids not exists in pivot table
+
+    - Sync update :
+      $data = table1_model::find(id);
+      $data->function_made_in_table1Model->sync([id,id]);  // this will take first two ids and find if it   
+                                                            exists then it will change the value to the 3rd id
+
+    - Sync delete() : 
+     $data- table1_model::find(id);
+     $data->function_made_in_table1Model->sync(id);    
+                    // if pair for the given ids exists it will delete that record from pivot table. 
+
+
+----------------------------HAS ONE THROUGH RELATION-------------------------------------
+
+Has One through relation is a relation of between 3 tables.....it works like a one to one relation but with more than 2 tables.
+
+By this we can get the data of table3 from table1.
+
+ - structure : 
+   3 tables...table1 records is related to table2 record and table2 record is related to table3 record.
+
+   - Step up: 
+
+   - make models for all tables : 
+   - in your table1 model make 2 functions
+     return $this->hasOneThrough(table3_model::class,table2_model::class); // table1->table3
+     return $this->hasOne(table2::class); // table1->table2
+      // table 2 and 3 are related to each other automatically.
+
+
+- get data from all tables :
+  use app\models\model1 and model2 and model3 
+  $data = Model1::with('model2_function_hasOne()')->with('model3_function_hasOneThrough()')->get();
+   return $data;
+
+   // make sure to have a hasOne() with table2 
+
+
+------------------------------HAS ONE OF MANY RELATION----------------------------
+ 
+It is a one to many relation. Using this relation we get a record according to some conditions.
+like there are users table and order table and we wanna get latest or oldest or most amount a user has spent we can get rocord like this.
+
+structure : 
+2 tables one to many relation 
+
+setup : 
+- make models for both of the tables. 
+- in your primary table model class make a function according to the need:
+  
+  // function to get the oldest record.
+  public function oldestrecord(){
+   return $this->hasOne(table2_model::class)->oldestOfmany();
+  }
+
+ // function to get the latest record.
+ public function latestRecord(){
+   return $this->hasOne(table2_model::class)->latestOfMany(); 
+ }
+
+ - Use them in Controller : 
+  // use both of the models in your controller.
+
+   public function show(){
+    $data=table1_model::with('function_model')->find(id);
+     return $data;
+   }
+
+
+  // function to get the max value of a column.
+  public function largest(){
+   return $this->hasOne(table2_model::class)->ofMany('FK_column','max');
+  }
+
+ // function to get the minimun value of column.
+ public function latestRecord(){
+   return $this->hasOne(table2_model::class)->ofMany('FK_column','min'); 
+ }
+
+ - Use them in Controller : 
+  // use both of the models in your controller.
+
+   public function show(){
+    $data=table1_model::with('function_model')->find(id); or get();
+     return $data;
+   }
+
+
+-----------------------HAS MANY THROUGH---------------------------
+structure: 
+this relation has 3 more than two tables involved. Each record of table1 is related to many records of table2 and each record of table2 is related to many records of table3.
+
+so what if we wanna get data of table3 with table1 ? its an issue beacause table1 is connected to table2 not with table3...so in this case we will get the data through table2.
+
+
+setup: 
+
+- make models of all tables.
+- let say i am trying to access table3 data from table1 through table2
+  // go to the model's class by which you are going to access data of other table. i this case table1
+
+   public function tables_name(){
+      return $this->hasManyThrough(table_to_get_data_from_model_class::class,table_through_model_class::class);
+   }
+
+- make a controller for the model which will get the data.
+ 
+ // in your controller 
+ use app\models\table1_model;
+ use app\models\table3_model; // table from which we are getting data.
+
+ public function show (){
+  $data=table1_model::find(id);
+  return $data->function_made_in_table1Model;
+ }
+
+
+
+--------------------------ONE TO ONE POLYMORPHIC RELATION-----------------------------
+Polymorphic relation is that lets say we have a situation where we have users table and posts table...now each user will have a profile pic and each post will have a image related to it...so for that i have to make 2 more tables for user_profile and post_images and connect them to the users and posts tables. which makes it all complex due to increasing number of tables.
+
+To overcome this issue Polymorphic relation is used which says if you have users and post table and wanna make a table for their images? make a single table and store all the image in it all laravel with handle everything fot it.
+
+Setup: 
+example for three tables (users,images,posts)
+
+-  make models for all the tables.
+   user.php , image.php , post.php
+- in the morph table model (image.php) make a function . 
+
+  public function imageable(){ // name of the function should be the name of the column of id and type like 
+                               // imageable_id and imageable_type 
+
+   return $this->morphTo();
+  }
+    
+- In other models : 
+ // add this in all of the other model classes to make a relation.(user.php , post.php)
+
+  public function image(){ // name of morph table (singular)
+      return $this->morphOne(image_model::class,'function made in morph table model');
+  }
+
+- make a controller for the model by which you wanna get the data.
+  // PostController.php
+
+ use app\models\post;
+
+  public function show(){
+    $data=post::with('function_made_in_post_model')->get(); OR find(id)
+    return $data;
+  }
+ 
+
+
+- save a record directly in a morph table: 
+  // in yout controller class
+   
+   use app\models\user_model;
+
+   $user=user_model::find(id); // you find a user first 
+   $user->function_made_in_model()->create([
+        'col_name'=>'value'
+   ]);
+
+   // you don't have to give value to the imageable_id and imageable_type columns...laravel will do it for you according to the model you are using to create.
+
+- save a record in a non morph table along with morph table : 
+  //posts table and images table(morph)
+  
+  // in your controller class
+   
+   use app\models\model_name;
+
+  $data=model_name::create([
+    'col_name'=>'value',
+  ]);
+
+  $data->function_made_in_model()->create([
+    'col_name'=>'value'
+  ]);
+  
+  // this will save the data in the non morph table and in the morph table too with latest id.
+
+
+--------------------------ONE TO MANY POLYMORPHIC RELATION-----------------------------
+
+relation itself is one to many. Where each record of primary table has multiple relation with multiple pivot table
+
+setup : 
+ example for table(posts , video , comments(morph table))
+
+- make models for all of the models
+
+ // in your morph table model. (comments)
+  public function commenta (){ // name of the function should be the prefix of the column used for id and type
+    return $this->morphto();
+  }
+
+// in each table model which will be connected to the morph table.
+  public function morph_table_name(){
+    return $this->morphMany(morph_table_model::class,'function_made_in_morph_model');
+  }
+
+- make a controller class for the models which will access the morph class.
+  
+  getting and creating data is same as one to one.
+
+
+-----------------MANY TO MANY POLYMORPHIC RELATION---------------------
+Where two tables has many relations with each other....they gets connected with another table called pivot table which holds the primary keys of both tables in pairs...indicating a relation between them.
+
+setup:
+example of three tables (posts->primary table,tags,tagable) tagable-> Polymorphic pivot table.
+
+- make models of all tables
+  Post.php, Tag.php , taggable.php
+
+- now make a function in all the primary tables: 
+
+// this method is telling laravel that i have a morphed relation with tag table.
+ public function tags(){
+  return $this->morphToMany(tag_model::class,'pivot_tabe_name');
+ }    
+
+
+- Make a method in your secondary table(tags) to tell larvel that tag has a morphed relation with posts and  
+  other primary tables if there is more than one. 
+
+  public function table_post(){
+    return $this->morphByMany(post_model::class,'pivot_tabe_name');
+  }
+
+  // make this function for all the models or tables which has relation with secondary table(tags).
+
+  - now make the controller for the model by which you wanna get the pivot table data.
+   
+   // ex posts model controller. 
+   
+   use app\models\post;
+   public function show(){
+    $data=post::find(1);
+    return $data->function_made_in_tag_model();
+ 
+   // thats reading
+
+   }
+
+-> CRUD
+
+ => CREATE 
+
+  // example to create a post and a tag for it in their respective tables.
+
+  //in your posts controller
+
+  use app\models\post;
+ 
+  public function create(){
+
+        $data=Post::create([
+          'col_name'=>'value',
+          'col_name'=>'value'
+        ]);
+
+        $data->function_made_in_tag_model->create([
+          'tag_name'=>'tag value'
+        ]);
+
+    //attach() when adding a new tag to existing record. 
+         $data->function_made_in_tag_model->attach([
+          'tag_name'=>'tag value'
+        ])
+
+    // attach() existing tag to a existing record.
+      $data=Post::find(3);
+      $data->function_made_in_tag_model()->attach(['id','id']); id=existing tag id.
+
+      // attach() existing tag to a new record.
+        $data=Post::create([
+          'col_name'=>'value',
+          'col_name'=>'value'
+        ]);
+
+      $data->function_made_in_tag_model()->attach(['id','id']); id=existing tag id. 
+  }
+
+
+=> Delete
+   public function detach(){
+       $data=Post::find(3);
+       $data->function_made_in_tag_model()->detach([1]); 
+       // this will delete the tag for the post 3 from pivot table....[1,3]
+   }
+
+
+-> get data with tag and its pivot details through post:
+
+  $data = Post::find(1);
+  return $data->function_made_in_post_model   
+
+->  get post and tags 
+ $data =Post::with('tags')->find(3);
+ return $data;    
+
+
+-> show all the tags for single post(multiple tags).
+
+   $data=Post::with('function_made_in_post_model')->get();
+   foreach($data as $item){
+    
+    // show post title 
+    echo $item->title;
+
+  // show the tag name
+    foreach($item->tags as $tag){
+      echo $tag->name;
+    }
+   }
+
+
+---------------------- JSON DATA COLUMN USING ELOQUENT-------------------
+Adding Json formatted data in mysql database table.
+
+setup:
+
+- make a migration file and define the json type column:
+  $table->json('col_name')->nullable();
+
+- make a model for the table:
+  // in your model 
+
+  protected $casts=[
+     'same_json_col_name_as_in_table'=>'json'//if this is not done laravel will treat data as a string not json
+  ]; 
+
+- make a controller file to perform CRUD on the table.
+
+=> CRUD OPEATION ON JSON COLUMN: 
+
+ -> Read : 
+   // in your controller class 
+   use app\models\model_name;
+
+   public function get_data(){
+
+
+   // get all the data of json column of a record.
+    $data=model_name::find(id);
+    return $data->json_col_name;
+
+    // get the specific property of json column of a record.
+    $data=model_name::find(id);
+    return $data->json_col_name['property_name'];
+
+    // get data in order of a specific property
+    $data=model_name::orderBy('col_name->property')->get(); OR find() for one record.
+       return $data->json_col_name;
+
+   // get nested property values.
+
+    $data=model_name::find(id);
+    return $data->json_col_name['nested_property_name']; // this will get the nested property data.
+              AND
+    return $data->json_col_name['nested_property_name']['property_of_nested_property']; 
+     // this will get the specific property value of the nested property.
+
+example structure:
+     {
+      'property_name'=>'value',
+       'property_name'=>[  // this is nested in an object.
+        'property_name'=>'value'
+      ]
+     }
+
+    // wher() method and whereJsonContains() on json data
+
+    - where()
+    $data=model_name::where('json_col_name->property_name','property_value')->get();
+    return $data;
+   
+    -whereJsonContains() 
+    $data=model_name::whereJsonContains('json_col_name->property_name','property_value')->get();
+    return $data;
+
+
+   }
+
+-> Create : 
+     // in your controller class 
+   use app\models\model_name;
+
+   public function create_data(){
+
+
+   //  there are two ways to insert data in json column.
+
+
+    // by making instance of the model.
+        $model=new model_name;
+
+        $model->json_col_name=[
+          'property_name'=>'value',
+          'property_name'=>'value',
+          'property_name'=>'value', 
+        
+        ];
+
+        $model->save();
+
+    // by create method mass assignment
+
+        $created=model_name::create=[
+        'property_name'=>'value',
+          'property_name'=>'value',
+          'property_name'=>[   // this property is nested property.
+            'property_name'=>'value',
+          'property_name'=>'value',
+          ],
+        ];
+
+        return $created;
+   }
+    
+    
+-> UPDATE : 
+
+  // in your controller class 
+
+  use app\models\model_name;
+
+  public update_data(){
+    
+    $data=model_name::where('id',id)->update([
+    'json_col_name->property_name'=>'updated value'// this specific property_name value for id will be updated
+    ]);
+   
+    // second method to update json data
+
+    $data= model_name::find(id);
+    $data->json_col_name['property_name']=>'update data';
+    $data->save();
+    
+    // if second method is used to update then model class should be modified by 
+
+    protected $casts=[
+      'json_col_name'=>asArrayObject
+    ];
+
+    // otherwise keep it as
+      protected $casts=[
+      'json_col_name'=>'json'
+    ];
+  }   
+
+
+-> DELETE : 
+  // in your controller class 
+
+  app\models\model_name;
+
+  public function delete_data(){
+    $data=model_name::find(id);
+    $data->json_col_name=collect($data->json_col_name)->forget('property_name');
+    $data->save();
+  } 
+
+   // this wil delete a property from the json object of a record.
+
+
+-------------------OBSERVERS AND MODEL EVENTS----------------------
+ EVENTS and OBSERVERS are used to perform an action before or after any CRUD operation on DB.
+
+ list of EVENTS : 
+
+ - creating  -> before creating a record.
+ - created   -> after creating a record
+ - saving    -> before saving a record  
+ - saved     -> after saving a record
+ - updating  -> before updating a record
+ - updated   -> after updating a record
+ - deleting  -> before deleting a record
+ - deleted   -> after deleting a record
+ - restoring -> before restoring a soft deleted record
+ - restored  -> after restoring a soft deleted record
+ - retrived  -> after a record has been retrived or get().
+
+ -> scenarios:
+    it is useful for the scenarios like if user deletes it account then delete the meta data related to it or 
+    posts related to that user.
+
+    User deletes a post then deletes the tags and comments for that post too.
+
+-> setup for events : 
+   - make a model for your table. 
+   // in your model make a function
+
+   protected static function booted():void{ // this method runs whenever A CURD is done by this model.
+          
+          // here define your events as methods.
+ 
+            static::created(function($data){ 
+
+            });
+  
+            static::creating(function($data){
+
+            });
+  // $data variable holds the info of the CRUD operation which is performed.
+   like if a record is deleted then deleted event $data holds the true or false for it same as other events.
+     }
+
+
+-> Setup for obervers: 
+
+   // make a oberver class : 
+    php artisan make:observer observer_name --model=name_of_the_model_it'll_listen_to
+
+  // then go to the service provider in the boot method
+
+    use app\models\name_of_the_model_its_working_for;
+    use app\observes\oberver_name;
+
+    model_name::observe(oberver_name::class);
+
+ // now go to your obervers and populate it with logic for events
+ // then perform a CRUD operation through contoller.   
+
+
+ -> saving data through observe. 
+   // in your observer 
+   public function saving(model_name $data){
+      $data->col_name=value;
+   }
+
+
+-> perform CRUD without triggering model event or observer event: 
+   sometime you don't want to trigger a event for CRUD then we use quietly(). usally used with if condition.
+
+   - save example: 
+   $user=model::find(id);
+   $user->name='name';
+   $user->saveQuietly(); -> this won't trigger event.
+
+
+- list:
+  - saveQuietly();
+  - deleteQuietly();
+  - forceDeleteQuietly();
+  - restoreQuietly();
+  - updateQuietly(); 
+
+
+----------------------------- QUERY SCOPES--------------------------------  
+This is used to make reusable queries which can be used by model each query can have a scope.
+- local 
+- global
+
+setup:  (local)
+ - make a model for the table
+ - in your model make a function 
+    
+    public function scopeActive($query){ // anything after the scope word is the name used to acces method.
+      return $query->where('status',1); // here are the reusable queries
+    }
+
+ - use them in your controller 
+   $data =model_name::active()->get()
+   return $data;  
+
+ // pass the dynamic value to the query method.
+
+  // from controller 
+
+   $data =model_name::active($para)->get()
+   return $data;  
+
+  // in your model
+    public function scopeActive($query , $para){
+      return $query->where('status',$para); 
+    }
+
+
+
+-> setup : (global)
+  -  make a model. 
+  - in your model's booted method.
+
+     protected static function booted():void{
+         static::addGlobalScope('nameofscope',function(Builder $build){
+          $build->where('col','value');
+         });
+     }
+
+  - Usage 
+   // in your controller
+    $data=model_name::get();
+    return $data; 
+
+    // now what will happen that global scope has been applied automatically on the query...so whenever i 
+    get() all the records it'll be filtered by the condition i have defined in the global scope.
+    in global scope we dont have to call the scope function in controller like local scope. it is model specific too.
+
+
+
+ -> 2nd way to make global scope query : 
+
+ - make a scope 
+  php artisan make:scope ScopeName
+
+- in your scope class
+  public function apply(Builder $builder, Model $model):void{
+    $builder->where('col_name','value');
+  }   
+
+- in your model 
+  use app\models\scopes\ScopeName;
+
+  protected static function booted():void{
+    static::addGlobalScope(new ScopeName);
+  }   
+
+  // this way all the query remains in a separate file keepin model file clean.
+
+-> get data without scope : 
+
+ // if global scope in a separate file: 
+  
+  $data=model_name::withoutGlobalScope(ScopeName::class)->get();
+    OR
+   $data=model_name::withoutGlobalScope([ScopeName::class,ScopeName::class])->get(); 
+
+// if global scope in model class
+  $data=model_name::withoutGlobalScope('ScopeName')->get();
+                    OR
+    $data=model_name::withoutGlobalScope(['ScopeName','ScopeName'])->get();
+ 
+
+// without any scope
+  $data=model_name::withoutGlobalScope()->get();
+
+
+-----------------------------------QUERY OPTIMIZATION LARAVEL-----------------------------------
+optimizing , shortcuts , trick for Eloquent queries.
+
+
+- Getting data of specific columns:
+
+extended:
+ model_name::select('col_name','col_name')
+                  ->where('col_name','value')
+                  -> get()         
+
+Short :  model_name::where('col_name','value')
+                          ->get(['col_name','col_name']); // for multiple columns
+                           OR get('col_name');             // for single column   
+
+- PLUCK method: 
+  
+  when data is fetched using pluck it'll fetch that specific column from all of the records and make an array of it.
+  it is used when there no dulicacy in records as pluck will skip the duplicate values for the key columns. it shows the last duplicate value for a records.
+
+   it takes two parameters: 
+   - if one is given then that column is fetched and an array will be made of it.
+   - if two parameters are then it'll fetch those columns and make an associative array of those columns where 
+     column 1 being the key and column 2 being its value.
+
+   syntax :  model_name::pluck('col_name1');
+                   OR  
+             model_name::where('col_name','value')->pluck('col_name1','col_name');
+
+
+- get specific columns using find() : 
+  
+  // get multiple columns 
+  model_name::find(id,['col_name','col_name']);
+
+  // get single column value :
+   model_name::find(id)->col_name;
+
+
+ - get specific column of relation table.
+   //lets say posts is our FK table.
+    model_name::with('posts:col_name,col_name,FK')->get(['col_name','PK']); 
+
+     // FK in posts table and PK in primary table is a must otherwise relation won't work between them. 
+     // so this will get 2 columns (col_name and Pk ) from table 1 and three columns from FK table(col,col,FK);
+
+ - get specific columns for foreign table relation through model :
+  in your relation model 
+
+  public function users(){
+    return $this->belongsTo(User::class')->select(['col_name','col_name','id']); // id is a must
+  }  
+
+    public function users(){
+    return $this->hasOne(User::class')->select(['col_name','col_name','id']); // id is a must
+  }    
+
+
+----------------------FILE UPLOAD LARAVEL------------------------
+
+steps to upload an image: 
+
+- make a form : 
+ <form method="POST" action='image/upload' enctype='multipart/form-data'>
+ @csrf
+     <input type="file" name='photo' accept='.jpg , .png'>
+ </form>
+
+- validate the file 
+ // in your controller 
+ $request->validate([
+  'photo'=>'required | mimes:jpg,png|max:3000' // size in Kb
+ ]);
+
+- save image
+  $request->file('photo')->store('folder_name');
+
+
+ -> Store() method: 
+
+    it is used to store image.
+   where does it stores the image? when store('folder_name') only one parameter is given this is the like telling store to make a folder if not exist. where?
+
+   store() makes a the folder in "storage\app\your_image_folder_name" this folder is made in local fileSystem which means that we cannot access that folder.
+
+   so we pass another parameter to store method.
+   store('folder_name','public'); -> this will make a folder in local as well as in public folder which has 
+                                     same path as local. By public folder we can access our image.
+
+    store() also changes the name of the file by giving it an unique name.
+    but if you want to give it a custom name by yourself by replacing it with orignal name then use 
+
+    -> storeAs('folder_name','your_custom_name','public');                                    
+
+   store image anywhere in project use : 
+   -> move(base_path('your\path'),'file_name.jpg'); 
+
+   - Access Image's orignal attribute : 
+    
+    - getClientOrignalName() -> get the orignal name of the uploaded file.
+    - extension() -> get orignal extension
+    - HashName() -> make a hashed string as the name of image
+    - getSize() -> get the size in bytes
+
+  - A must to do step is to link the storage folder with the public folder as web can't access storage folder.x
+    command=>  php artisan your_folder_name:link // this will automatically link your folder to public folder.
+
+  - access that linked folder image in html page.
+     <img src='{{asset('/folder_name/' . image_path)}}'> // image_path from db
+
+
+----------------------------------LARAVEL ACCESSORS AND MUTATORS----------------------
+Accessors-> Modifying or formatting fetched data. it is done for individual column fetched from DB.
+
+steup for Accessors : 
+- make a model of your table.
+- in your model class there are two way to make a Accessor function.
+  1. old way 
+  2. laravel 10 and + way 
+
+  -> old way :                                      //get keyword in method indicates its a Accessor.
+    public function getNameAttribute($value){      // Name is the col it is made for. 
+      return ucwords($value);                     // this will capitalize each word of name.
+    }
+
+  -> laravel 10 and + way :
+   use Illuminate\Database\Eloquent\Casts\Attribute;
+    protected function name():Attribute{
+      return Attribute::make(
+        get: fn($value)=>ucwords($value),   
+      );
+    }  
+
+  - Difference between them ? 
+   first method is mostly used and it is used when we wanna make only accessors for the column.
+   second method is used to make accessors and mutators in one function.
+
+ -> how to work with them? 
+
+   make a controller and work as you do...but now for those columns you have made a accessors or mutators it'll format according to those methods.
+
+   so if i -> model_name::get(); -> this will get everything but the name would be capitalized automatically.
+
+-> MUTATORS : 
+  they are opposite of accessors. Mutators are used to format data before saving them in database.
+
+    steup for Mutators : 
+    - make a model of your table.
+    - in your model class there are two way to make a Mutators function.
+      1. old way 
+      2. laravel 10 and + way 
+
+      -> old way :                                      //set keyword in method indicates its a Accessor.
+        public function setEmailAttribute($value){      // Email is the col it is made for. 
+          $this->attribute['email']=strtolower($value);    // this will capitalize each word of name.
+        }
+
+      -> laravel 10 and + way :
+       use Illuminate\Database\Eloquent\Casts\Attribute;
+        protected function email():Attribute{
+          return Attribute::make(
+            set: fn($value)=>strtolower($value),   
+          );
+        }  
+
+
+-> Some Formatters for mutators and accessors :
+
+  mutators for a table which has fields (Name,email,salary,Date_of_brith,password);
+
+ // in your model class
+
+ // Mutator for Name column to capitalize the Name before storing in DB.
+    public function setNameAttribute($value){
+      $this->attribute['Name']=ucwords($value);     
+    } 
+
+// Mutator for Email column to lowercase the email before storing in DB.
+    public function setEmailAttribute($value){
+      $this->attribute['email']=strtolower($value);
+    }
+
+// Accessor for Salary Column to get the number with currency symbol.
+  public function getSalaryAttribute($value){
+     return Number::($value,in:'PKR'); // for currency symbol
+     return Number::spell($value); // numbers in words.
+  }
+
+// Accessor for D.O.B column to get the date in readable form.
+      public function getDateOfBirthAttribute($value){
+        return date('d M Y',strtotime($value));
+      }  
+
+// Mutator for Password to hash it before storing
+      public function setPasswordAttribute($value){
+         $this->attribute['password']=bcrypt($value);          
+      }      
+
+-> Example for Newer version of accessors and mutators    
+   // for Name column...we can set and get at the same time.
+
+   use Illuminate\Database\Eloquent\Casts\Attribute;
+    protected function name():Attribute{
+      return Attribute::make(
+        get: fn($value)=>ucwords($value),         // get in capitalized format
+        set: fn($value)=>strtolower($value)       // set in lowercase
+      ) ;
+    }  
+
+
+------------------------LARAVEL COMPONENTS------------------------------
+Componets are used make reusable HTML. which is used in various blade files.
+
+
+steps to make a Componet : 
+
+1. php artisan make:component component_name -> this command will make two files in two locations
+    - app/View/Componet/component_name          // component class 
+    - resources/views/component/component_name  // blade view
+    
+  -> Componet class : 
+    it used when we want to pass dynamic values to the component.
+
+    // in component class there would be two methods.
+
+    public function __construct(){
+                   
+    }
+     
+    public function render(){
+        return view('view_name'); -> this view's html will be rendered change for other file.
+    } 
+
+
+ 2. Use component in other view : 
+    <x-component_name/> // this way component html will be rendered we can call as much as we want.
+    <x-component_name  message='success message'/> //pass dynamic values to the component.  
+
+
+ 3.  Access the dynamic value in component
+    - modify component class 
+    - get values in component.
+
+    // in component class __construct function 
+    public $message;
+    public function __construct($msg){
+       $this->message=$msg;
+    }
+
+    // in your component 
+    <p>{{message}}</p> // that value from component class will appear here.
+
+    // in usage component 
+
+    <x-component_name message="this is a dynamic message">
+
+------------------------------SLOTS AND ADVANCE COMPONENTS FEATURES--------------------------------
+
+slot are a part of component and it is used to pass custom html to a component.
+
+// in your component 
+<div id='component'>
+ {{$slot}}
+</div>
+
+// in your main page   
+<x-component_name>
+<p>from main page</p>  // this html will be rendered in your main page but by your component.
+<x-component_name/>
+
+
+----------------------------AUTHENTICATION------------------------------
+Authentication is used to restrict access of a page or multiple page until user's credentials are provided.
+
+types of Authentication :
+1. session based Authentication. (old method) 
+2. Manually Authentication with Auth class.
+3. Starter Kit -> laravel Breeze
+                  laravel Jtstream
+                  laravel Fortify
+
+- Starter Kit can be used for 
+  - Registration/login page 
+  - Forgot password
+  - Email verification
+  - Two-factor-Authentication
+
+4 API Authentication
+ 
+-> Working with Manual Authentication :
+
+ - make a controller class.
+ // in your contoller class make a function
+
+   use illuminate\Support\Facades\Auth;
+
+    public Login(){
+      
+      // validate
+      $credentials= $req->only('email','password');
+      // auth part 
+      if(Auth::attempt($credentials)){
+        return view('view_name');
+      }
+    }
+
+
+  -> Notice that we are not telling it that from which table request values belongs To.
+
+     Auth class automatically looks for users table in database and it is required to have a users table and a column named password which can be paired with anyother column for Authentication.
+
+     if you want to change the defualt table for credentials...go to Auth.php and modify it as per need.
+
+    you can use Auth class in any controller it'll still look for users table and columns to authenticate.
+
+  -> Methods which are used after user is authenticated.
+    - Auth::user()      -> to get the info of the logged in user.
+    - Auth::id()        -> get the id of the logged in user.
+    - Auth::check()     -> check if user is authenticated.
+    - Auth()::guest()   -> opposite of check , if user is not authenticated.
+    - Auth::logout()    -> logout the user
+
+  -> Auth::user()
+     // in your blade file
+     <p>{{Auth::user()}}</p> // this will get all details of the logged in user.
+     <p> {{Auth::user()->name}}</p> // get name of logged in user
+      <p> {{Auth::user()->email}}</p> // get email of logged in user
+
+  -> Auth::check()
+    public function dashboard(){
+      if(Auth::check()){
+        return view('dashboard');
+      }else{
+        redirect('login page');
+      }
+    }  
+
+  -> Auth::logout()
+    // make a route for logout
+    // in your blade file have a link to logout route.
+    // in your controller make a function to logout.
+    public function logout(){
+
+      if (Auth::check()){
+        Auth::logout();
+        return view('index');
+      }else{
+        return;
+      }
+    }  
+
+ -> check with specific value:
+        if (Auth::check() && Auth::user()->name === "admin"){
+        Auth::logout();
+        return view('adminpage');
+      }else{
+        return;
+      }
+ ---------------------MIDDELWARE--------------------
+ it is a protocol which is accessed by each request first from user than controller.
+
+ types of middelware :
+- Route middelware.
+- middelware group.
+- Global middelware.
+
+steps to make a middelware: 
+1. php artisan make:middelware middelware_name
+2. app\http\middelware\middelware_name -> this path will have your middelware class.
+3. in your middelware class you will have a function which in which you can define your logics.
+   
+   class middelware_name{
+    public function handle(Request $request , Closure $next): Response
+    {
+       // here you can define your logic.
+
+       // example logic for auth check.
+       if(Auth::check()){
+          return  $next($request); 
+       }else{
+        return redirect()->route('login');
+       }
+    }
+   }
+
+-> Using Middelware in Different ways.
+ making a middelware is same but the Difference between them is the how they are used.
+    
+    -> Route Middleware : 
+     // in your route file.
+     use app\http\Controllers\controller_name;
+     use app\http\Middelware\middelware_name;
+
+    Route::get('/dashboard',[controller_name::class])->middelware(middelware_name::class);
+     // now route for dashboard will use middelware to check auth first then it'll give access.
+     // it is a route specific middelware and only work with dashboard route.
+
+    -> Group Middelware :
+      - make multiple middelwares.
+      -  go to Bootstrap/app.php file
+      -  in that file there will be a function named withMiddelware()
+
+            withMiddelware(function(Middelware $middelware){
+                $middelware->appendToGroup('middelware_group_name',[
+                     middelware1::class,
+                     middelware2::class,
+                ]);
+
+
+               // change the names of the middlewares.
+               $middleware->allias([
+                'newName'=>middelware_name::class,
+                'newName'=>middelware_name::class,
+               ])  
+            } );
+
+      - in your Route file
+       Route::get('/dashboard',[controller_name::class])->middelware(['middelware_group_name']);
+     
+    -> Global Middelware : 
+       -  go to Bootstrap/app.php file
+       -  in that file there will be a function named withMiddelware()
+
+            withMiddleware(function(Middelware $middelware){
+                // append single middelware
+                $middelware->append(middelware_name::class);
+
+                 // append multiple middelwares
+                $middleware->use([
+                  middleware1::class,
+                  middleware2::class
+                ]);
+            } );
+-> terminate() : 
+    used when middleware has completed its work.
+
+    public function terminate(Middleware $middleware, Response $response):void{
+          echo  'terminating middleware logic.'
+    }
+
+
+-> send dynamic values to the middleware : 
+  
+   value is passed to only those middlewares which are allias name.
+  
+  - make an alias name for middleware. from Bootstrap\app.php file
+  - in your routr file
+    Route::get('dashboard',[controller_name::class])->middleware('aliased_name:value');
+
+  - in your middleware class get one more parameter in the function along with next and request for 
+    value.
+             public  function  middelware_name (Middelware $middelware ,string $role){
+                // $role has the value.
+                echo 'role is'. $role;
+            }  
+
+
+-> Auth middleware :
+  it is a builtin middleware of laravel which does the auth checking by itself.
+   so simply put it on the route like middleware(['auth','your_middleware:value passed to it.']);            
+
+-> Priority middleware: 
+  when multiple middlewares are implemented on a route or  app then they all starts to work simultanously so to keep them in sequence.
+
+  -  go to Bootstrap\app.php
+  - in middleware function.
+  
+     withMiddelware('middelware_name', function(Middleware $middleware){
+       $middleware->priority([
+          middleware1::class,
+          middleware2::class,
+          middleware3::class,
+       ])
+     })
+
+
+--------------------------LARAVEL SESSIONS AUTHENTICATION-------------------------------
+Session are used to store data of a user when authenticated.
+
+-> Create sessions :
+   session('key'=>'value');
+   session()->put('key'=>'value');
+    
+-> Read Session : 
+    session()->all(); // this will get all the session keys and values.
+    session()->get('key') // to get specific session
+    session()->get(['key','key']) // to get multiple session
+    session('key','default value') // get specific key and if null then a default value
+
+->  Delete session : 
+    session->forget('key');
+    session->forget(['key','key']); //delete multiple sessions.
+    session->flush(); // delete all sessions.   
+    session->invalidate(); // good for security as it deletes the token too.
+
+
+- Every session has a limited lifespan by defaut it is 2Hrs.
+  // modify session lifespan.
+   -> in your .ENV file 
+     SESSION_LIFETIME=120; - change this value.
+
+-> Session Methods : 
+  - session()->has('key')     -> this will return false if key is not set or is null.
+  - session()->exists('key')  -> this will be false if key doesn't exists. even if its null.
+  - session()->only(['key','key']) -> check for only these keys.     
+  - session()->except(['key','key']) -> check all keys except given keys.
+  - session()->increment('count')      -> this will increase a sessions value everytime a session is made.
+  - session()->decrement('count')      -> this will decrease a sessions value everytime a session is made.
+  - session()->regenerate()     ->each session has a token this method will refresh that token for security.
+  - session()->flash('key','your message') -> send an alert from one page to another after session operations
+      // get flash message in your blade file
+      @ifi(session('status'))
+         <p>{{session('status')}}</p>
+      @endif
+      // flash messages are temporary stored and if page is refreshed they disappears.
+
+
+--------------------------------LARAVEL GATES--------------------------------------
+Gates are used just like middleware...they are given some conditions and upon those conditions gates provides access to some content or route.
+
+Gates are different from middleware. Middleware is implemented on  routes only but Gates can be implemented on route as well as on our blade file which means we can specify which type of user can see or have access to a section of our blade html page.
+
+-> Gates can be used for 
+  - Route 
+  - Blade file
+  - Controllers
+  - Middleware
+
+-> Setup for Gates:
+  
+ - open App\Providers\AppServiceProvider file
+   // in that file make a function 
+
+    use App\models\User;   // User model
+    use illuminate\Support\Fascades\Gate;  // Gate class.
+
+   public function boot():void{
+
+    Gate::define('gate_name',function(model $model){ // gate define method always returns ture or false.
+      return your condition here;
+    }); 
+
+    // example for checkin role of user using User Model.
+      Gate::define('isAdmin',function(User $user){ 
+        return $user->role==='admin';   // true if admin false if not.
+      });
+   }
+
+-> Usage of Gates : 
+ 
+   - Gates with Route. [middleware('can::gate_name')]
+
+    // in Web.php
+    Route::get('/dashboard',[UserController::class,'dashboard'])->middleware('can:gate_name');
+    Route::get('/dashboard',[UserController::class,'dashboard'])->can('gate_name');
+
+  - Gates with Blade file:
+    
+    // in your blade file 
+
+    @if(Gate::allows('gate_name'))
+     html to show if gate is true.
+    @endif
+    
+    // other way to check true for gates.
+     @can('gate_name')
+      html to show if gate is true.
+     @endcan
+
+     // if gate is false
+       @if(Gate::denies('gate_name'))
+         html to show if gate is false.
+       @endif
+
+    // other way to check true for false.
+     @cannot('gate_name')
+      html to show if gate is false.
+     @endcan
+
+   - Gates with Controller : 
+
+    // in your controller class
+    public function dashboard(){
+
+      if(Gate::allows('gate_name')){
+        return view('dashboard');
+      }else{
+        return view('index');
+      }
+       
+       // pass data to Gate 
+      if(Gate::allows('gate_name',$userid)){ // add a parameter in your gate method to get $userid data.
+        return view('dashboard');
+      }else{
+        return view('index');
+      } 
+
+      // second method to check for true value of gate.
+             Gate::authorize('gate_name'); // if this it wil not crash the app but throw a 403 error page
+             return view('view_name');
+          }  
+
+   - Gates with middleware :
+    
+    // in your middleware class
+     public function handle(Request $request , Closure $next): Response{
+      if(Gate::denies('gate_name')){
+        abort(403);
+        }else{
+          return $next($request);
+        }
+     }
+
+-------------------------LARAVEL POLICIES-------------------------------
+Cleaner version of Gates.Policies works same as Gates only Difference is that policies are model related means each policy is related to a specific model which makes logic more scalable and cleaner unlink gates where gates for all the models are put in one file which creates complexity and difficult to scale.
+
+
+-> make a policy :
+  php artisan make:policy ModelPolicy 
+
+-> In your policy class get the model you have made policy for.
+
+-> work in policy class .
+   use App\models\model_name;
+
+   class Policy{
+
+    public function update_modelName(){
+
+    }
+     public function delete_modelName(){
+      
+    }
+   }
+
+-> usage of policies :
+
+  - in Routes
+    Route::get('index',[model::class,'show'])->middleware('can:policy_method_name');
+
+  - In Blade file 
+    // method 1
+    @if(Auth::user()->can('policy_method_name'))
+    
+    @endif
+
+    // method 2
+    @can('policy_method_name')
+    
+    @endcan 
+
+
+  - In controller 
+    public function show(){
+      Gate::authorize('policy_method_name');
+      return view('index');
+    }
+
+
+------------------------------- SEND EMAIL LARAVEL -------------------------------
+
+Email servers -> Gamil, Yahoo, Hotmail
+
+-> setup for Gmail :
+  
+- open .ENV file.
+- in your .ENV file.
+
+// modify ENV file
+   MAIL_MAILER=smtp
+   MAIL_SCHEME=null
+   MAIL_HOST=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USERNAME=sender@gmail.com
+   MAIL_PASSWORD=sender_App_password
+   MAIL_FROM_ADDRESS="sender@gamil.com"
+   MAIL_FROM_NAME="${APP_NAME}"
+   MAIL_ENCRYPTION=tls
+
+ - make a controller to send email.
+   php artisan make:controller EmailController
+
+ - in your mail controller
+   use illuminate\Support\Fascades\Mail;
+   use App\Mail\mail-able_class_name;(welcomeemail)
+   public function sendMail(){
+
+    // prepare variables.
+    $reciever_email= 'reciver@gamil.com';
+    $message='your message';
+    $subject='subject';
+       
+    // send mail
+    Mail::to($reciever_email)->send(new welcomeemail($message,$subject));  
+    }    
+
+   // welcomeemail is a mail-able class which is made separatly to be used in sending email. 
+
+ - make a mail-able class 
+   php artisan make:mail welcomeemail
+
+   // in your mail-able class there would be 4 methods each having there own purpose.
+    
+     public __construct(){
+        public function __construct(){} -> initialize variables here.
+        public function envelop(){}   -> return Subject 
+        public function content(){}   -> return Text message/ html blade view file  
+        public function attachment(){} -> attach images,pdf,word file etc.   
+
+     }
+
+   // when variables are sent to mail-able class it should be made public only then laravel will gave those variable values to the views returned from content method.
+
+   // but if passed value is protected or is not public then use 
+       public function content(){
+         view: 'view_name',
+         with:[
+            'key'=>$this->varibale,
+            'key'=>$this->varibale,
+         ] 
+       }   
+
+-> send users to multiple recivers 
+    // in your controller class
+
+    use illuminate\Support\Fascades\Mail;
+    public function sendMail(){
+      $recivers=[
+        'user1@gmail.com',
+        'user2@gmail.com',
+        'user3@gmail.com',
+        'user4@gmail.com',
+      ]
+      $message='message for everyone';
+      $subject='subject';  
+
+      foreahc($reciver as $reciver){
+        Mail::to($reciver)->send(new mail-able_class $message,$subject) ;
+      } 
+    }       
+
+ ----------------------SEND ATTACHMENT WITH EMAIL-------------------------
+ make a controller and mail-able class
+
+ -> in your controller : 
+   
+   use illuminate\Support\Fascades\Mail;
+  public function sendMail(Request $req){
+    $messgae="message";
+    $subject='subject';
+    $reciver="user@gmail.com";
+    $attachment_file=$req->file('attachment_file');
+
+    // move file to public\uploads folder first.
+    $attachment_file->move('uploads',$attachment_file->getClientOrignalName());
+
+    // send mail
+    Mail:to($reciver)->send(new mail-able_class $message, $file, $subject);
+  }
+
+-> in your mail-able-class: 
+    public $filename;
+    public $message;
+    public $subject;
+
+    public function __construct($message,$subject,$file){
+          $this->message=$message;
+          $this->subject=$subject;
+          $this->filename=$file;
+    }
+
+    // then in attachment method.
+
+    public function attachments():array{
+      $attachment=[];
+
+      if($this->filename){
+        $attachment=[
+             Attachment::fromPath(public_path('/upload/'.$this->filename))
+        ];
+      }
+       
+    }
+
+  -> Usefull methods for attachment.
+
+    // if file is not uploaded in public folder and is saved in storage folder.
+    Attachment::fromStorage('/path/to/file'); 
+    
+    // file from 3rd party server like (aws)
+    Attachment::fromStorageDisk('s3','/path/to/file');
+
+    // if you want to show an image with your Email.
+
+     // in your blade file 
+      <img src='{{$message->embed(path_to_image)}}'> // this works for live server only. 
+    
+
+-------------------------------------- API IN LARAVEL ---------------------------------------
+API-> Aplication program interface
+
+larvel Packages for API:
+- Sanctum   -> for low to medium level websites.
+- Passport  -> for complex and scalable webistes.
+
+-> Sanctum : 
+  it is a laravel API Package used to make tokenated API requests.
+  
+  - FLow :
+   -> User send a request to login.
+   -> Server gets the request checks the credentials and if successfull then a token is saved in token table.
+   -> Server sends back the response to forntend with the token which we have to manually save in session or 
+      local disk storage.
+   -> After log in request , all the CRUD request will be sent with that token.   
+   -> Now that token will be used to verify the user each time a request is sent by that user until user logs 
+      out    
+
+
+-> Setup Sanctum API :
+  - install and publish: 
+    composer require laravel/sanctum
+
+    php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+
+    php artisan migrate
+
+    or 
+    php artisan install api
+
+ - in your model file: 
+
+   use Laravel\Sanctum\HasApiTokens;
+    class model_name  extends Authenticable{
+          use HasApiTokens;
+    }
+
+ - simple login request: 
+    // in your controller
+
+   use Illuminate\Http\Request; 
+   use Illuminate\Support\Facades\Auth;
+   use App\Models\User;
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        // Attempt login
+        if (Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'status' => true,
+                'message' => 'user logged in successfully',
+                'token'=>Auth::user()->createToken('auth_token')->plainTextToken,
+                'token_type' => 'Bearer',
+                'user'=>Auht::user();
+            ], 401);
+        }else{
+               return response()->json([
+                'status' => false,
+                'message' => 'Invalid email or password'
+            ], 401);
+        }
+    }                       
+
+  - Delete token 
+     // in your controller class
+      public function logout(Request $request)
+         {
+          $request->user()->currentAccessToken()->delete(); // to logout user from current device.
+          $request->user()->tokens()->delete(); // to logout user from all device.
+          return response()->json([
+              'status' => true,
+              'message' => 'User logged out successfully'
+          ]);
+         }
+
+  NOTE : we are not find the token oof the user with where or find method why? 
+         because sanctum keeps track of the logged in user and its token so it knows whose token er are talking about.
+  NOTE : when making any route like logout which requires authencation first....for that 
+         route use middleware->('auth:sanctum')->post(''); 
+         with using sanctum built in middleware authencation wont work.       
+
+-> CRUD operations : 
+
+  = READ :
+
+  // in your controller
+  public function Read(){
+
+    $data=model_name::get();
+    return response()->json([
+      'status'=>'true',
+      'message'=>'data fetched successfully',
+      'data'=>$data 
+    ],200);
+  
+  }     
+
+ = Create : 
+  // in your controller 
+  public function create(Resquest $req){
+   
+   $validate= $req->validate([
+    'name'=>'required',
+    'email'=>'required|email',
+    'password'=>'request'
+   ]);
+
+   if($validate()->fails()){
+      return response()->json([
+       'stauts'=>'true',
+       'message'=>'failed to create',
+       'errors=>$validate()->errors()->all()
+      ],401);
+   }
+     
+     $created=model_name::create([
+      'name'=>$req->name,
+      'email'=>$req->email,
+      'password'=>$req->password
+     ]);
+
+     if($created){
+      return response()->json([
+        'status'=>'true,
+        'message'=>'created successfully',
+        'data'=>$created
+      ],200);
+     }
+  }
+
+= UPDATE : 
+  //in your controller 
+  public function create(Resquest $req){
+   
+   $validate= $req->validate([
+    'name'=>'required',
+    'email'=>'required|email',
+    'password'=>'request'
+   ]);
+
+   if($validate()->fails()){
+      return response()->json([
+       'stauts'=>'true',
+       'message'=>'failed to create',
+       'errors=>$validate()->errors()->all()
+      ],401);
+   }
+     
+     $updated=model_name::where('id',$req->id)->update([
+      'name'=>$req->name,
+      'email'=>$req->email,
+      'password'=>$req->password
+     ]);
+
+     if($updated){
+      return response()->json([
+        'status'=>'true,
+        'message'=>'updated successfully',
+        'data'=>$updated
+      ],200);
+     }
+  }
+
+
+= Delete :
+  public function create(string $id){
+     $deleted=model_name::find($id)->delete();
+     
+     if(deleted){
+     return  response()->json([
+        'status'=>true,
+        'message'=>'record deleted successfully',
+        'data'=>$delete
+      ],200);
+     }else{
+         return  response()->json([
+        'status'=>false,
+        'message'=>'failed to delete record',
+      ],400);
+     }
+   
+  }  
+
+
+---------------------------API FOR FRONTEND WITH JAVASCRIPT-----------------------------
+API request can be sent from frontend and we get a reponse as a result which is display in the webpage.
+
+there are 2 Methods to send API reuqest:
+1. Fetch()                  -> JS fetch Method 
+2. $.ajax({})               -> jQuery Ajax method
+
+Fetch() Structure : 
+
+=> fetch('APIfile'/url',{
+      method: GET/POST/PUT/DELETE,
+      body:data,   -> Json data/ Form Data/Text
+      header:{
+        'Content-Type':'application/json',
+
+        // if your are updating fields through form data then use POST in method value and 
+        'X-HTTP-Method-Override':'PUT',  // this will override the POST method to PUT for laravel.
+
+        // if using authencation token
+        Authroization:'Bearer${token}', // token is a variable which has token's value.
+      }
+    }).then(function(response){
+
+      return response.json();
+
+    }).then(function(result){
+    
+      console.log(result);
+
+  });
+
+
+=> $.ajax({}) structure :
+   
+   // first get jQuery mini version link from website and add that script tag your blade file. then following
+
+  $.ajax({
+    url:'API_URL',
+    type:'POST/GET/PUT/DELETE',
+    data:String/Object/Array,
+    contentType:'application/json'             -> for json req and response.
+                'multipart/form-data'          -> send form data with a file. 
+                'application/x-www--form- urlencoded'
+                'text/plain'
+    success:function(data){    // this data variable has the response from server.
+
+    }            
+    error:function(xhr,stauts,error){
+      alert('Error:'+ xhr.responseText); // show error in plain text 
+    }
+
+  });            
+
+-------------------------HASH PASSWORD AND VERIFY IT-----------------------
+
+- make a mutator for password field in DB.
+     public function setPasswordAttribute($value){
+         $this->attribute['password']=bcrypt($value);          
+      }  
+// this will hash the password before saving it.
+
+- verify 
+  // in your controller
+  public function login(){
+      if (Auth::attempt(['email' => $email, 'password' => $password])) {
+        // ✅ Laravel automatically: 
+        // 1. Looks up the user by email
+        // 2. Hash::check()s the password
+        // 3. Starts the login session
+
+        return redirect('/dashboard');
+    } else {
+        // ❌ Wrong email or password
+        return back()->withErrors(['email' => 'Invalid credentials']);
+    }
+  }
+
+
+------------------------------CONNECT REACT TO LARAVEL------------------------------
+ 
+ - first make a laravel app if not made
+  composer create-project laravel/laravel project_name
+
+ - Now for the React insallation.
+ //   go to your project folder in cmd and type
+  
+   npm install
+
+ - then after that 
+   npm install react react-dom
+
+ - after that 
+   npm install --save-dev @vitejs/plugin-react
+
+ - Open vite.config.js and update like this
+   import { defineConfig } from 'vite';
+   import laravel from 'laravel-vite-plugin';
+   import react from '@vitejs/plugin-react'; // add this 
+
+    export default defineConfig({
+        plugins: [
+            laravel({
+                input: ['resources/js/app.jsx'], // and change .js to .jsx
+                refresh: true,
+            }),
+            react(), // add this 
+        ],
+    });   
+
+ - now go to resources/js/app.js
+    change app.js to app.jsx 
+
+ - inside your app.jsx file 
+
+   // this would be your main app.jsx file to render components
+   import React from 'react';
+    import ReactDOM from 'react-dom/client';
+
+    function App() {
+        return (
+            <div className="p-5 text-center">
+                <h1>Hello from React inside Laravel!</h1>
+            </div>
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);    
+
+  - now make any blade file in views folder or take pre built view file update it.
+        <!DOCTYPE html>
+        <html>
+        <head>
+            @viteReactRefresh
+            @vite('resources/js/app.jsx')
+        </head>
+        <body>
+            <div id="app"></div>
+        </body>
+        </html>
+  
+  - then run laravel server (php artisan serve) and react server (npm run dev).
+
+
+ ------------MAKE A COMPONENT IN REACT THEN SHOW IN LARAVEL-------------------
+ - make a folder in your resources\component\first_component.jsx
+
+  - in your component 
+    import React from 'react';
+
+    function Show(){
+      return (
+        <div>
+        <p>Hello from component</p>
+        </div>
+      );
+    } 
+          
+    export default Show;
+
+  - in your app.jsx 
+    import Show from './component/Show';
+
+    function App(){
+      return (
+         <Show/>
+      )
+    }   
+
+
+-------------------------LARAVEL SANCTUM API GUIDE--------------------------------
+- install laravel sanctum as composer : composer require laravel/sanctum
+- publish sanctum : php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+- if you are connected to DB then run : php artisan migrate 
+- if not connected to DB then make one connect to it and then : php artisan migrate
+
+
+-> response : 
+   -> make a trait for the success and failure response so you dont have to write it again and again.
+   -> you can send teh response by writing it all over for each request.
+
+   -> response by traits.
+     -go to App\ folder and make a folder name responseTraits. (App\responseTraits)
+     - make a class in responseTraits folder as HttpResponse.php.
+     
+     // in your HttpResponse.php class
+     <?php>
+     namespace App\responseTraits;
+
+     trait trait_name{
+
+      protected function success ($data,$message=null,$statuscode=200){
+        return response()->json([
+          'status'=>'success',
+          'message'=>$message,
+          'data'=>$data,
+        ],$statuscode);
+      }
+
+
+       protected function failure ($data,$message=null,$statuscode=200){
+        return response()->json([
+          'status'=>'failure',
+          'message'=>$message,
+          'data'=>$data,
+        ],$statuscode);
+      }
+     }
+     <?php>
+     
+     - Use traits in a controller.
+       // in your controller 
+
+       use App\responseTraits\HttpResponse;
+
+       class controller_name extends Controller {
+          use trait_name;
+
+          // then call the function made in trait
+          return $this->success($data,'message for response',200);
+       } 
+
+
+
+    -> Raw response : 
+       // in your controller 
+        return response()->json([
+          'status'=>'success',
+          'message'=>'operation success',
+          'data'=>$data,
+        ],200);
+
+
+-> protect routes.
+
+  public routes are login register.
+  protected routes are all those routes which requires authencation.
+
+  // in your api.php
+
+  Route::group(['middleware'=> ['auth:sanctum']],function(){
+    Route::get('/protectedroute',[controller_name,'method'])
+     Route::get('/user/logout',[controller_name,'method'])
+  });
+
+
+-----------------GET Value from Related table from FK table-------------------------
+
+this is done by accessor function  easily.
+
+situation -> you have two tables(FK,PK) in One-to-many relationship. you want to get the value of a specific 
+             column from PK table from FK table.
+
+// in your model which is FK model make a accessor model.
+
+public function getTaxRateAttribute()
+{
+    return $this->function ? $this->function->tax_rate : null; // logic to get the value.
+}
+
+NOTE: 
+-  function is the method you made in you FK table which defines the relation of FK with PK table.
+-  getTaxRateAttribute this is important to laravel this name has 3 parts.
+   get X  Attribute -> here x is the column from the PK table you want to get the value of.
+  
+   so if i want to get the tax_rate column's value from a PK table (categories)
+   my accessor's method name would be getTaxRateAttribute()
+
+   get -> laravel knows that its a accessor method.
+   TaxRate -> laravel gets to know that this is the column to work with.
+   Attribute -> is used to get the value.    
+
+
+// in your controller.
+  $rate=FKModel::with('method_of_relation_in_FKModel')->find(id);
+  $taxrate=$rate->tax_rate ;// accessing the PK table column(tax_rate)
+
+// now when you call $rate->tax_rate thats when magic happens.
+
+  - laravel goes to FK table to find tax_rate but there is no column as tax_rate in FK table
+  - then it calls accessor method and then checks if there is tax_rate column in connected table if yes then 
+    get the value
+    
+
+ 
