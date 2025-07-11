@@ -40,8 +40,8 @@ This document includes screenshots and explanations of every major feature in th
 
 | Layer       | Tech Used               |
 |-------------|--------------------------|
-| **Frontend**  | React.js, Axios, Tailwind CSS |
-| **Backend**   | Laravel 10 (REST API)         |
+| **Frontend**  | React.js, fetch, html CSS |
+| **Backend**   | Laravel 12 (REST API)         |
 | **Database**  | MySQL (with migrations & seeders) |
 | **Auth**      | Laravel Sanctum           |
 | **Charts**    | Chart.js                 |
